@@ -2,229 +2,400 @@
 <html>
 <head>
     <title>T-PAL - Question Paper Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body { 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            background: #f0f4f8; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 20px 0;
         }
+        
         .header {
-            background: #1a73e8;
-            color: white;
-            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2d3748;
+            padding: 25px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            margin: 0 auto 30px;
+            max-width: 900px;
+        }
+        
+        .header-left {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .header h1 { font-size: 24px; }
-        .header p { font-size: 13px; opacity: 0.85; }
-        .container { max-width: 850px; margin: 30px auto; padding: 0 20px; }
+        
+        .logo {
+            font-size: 42px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .header-text h1 { 
+            font-size: 28px;
+            color: #667eea;
+            font-weight: 700;
+        }
+        
+        .header-text p { 
+            font-size: 14px;
+            color: #718096;
+            margin-top: 4px;
+        }
+        
+        .badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .container { 
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
         .card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 16px;
+            padding: 35px;
             margin-bottom: 25px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
         }
+        
         .card h2 { 
-            color: #1a73e8; 
-            margin-bottom: 20px;
-            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 25px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+        
+        .emoji-icon {
+            font-size: 28px;
+        }
+        
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group.full-width { grid-column: 1 / -1; }
-        label { font-size: 13px; font-weight: 600; color: #444; }
-        select, input {
-            padding: 10px 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+        
+        .form-group { 
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group.full-width { 
+            grid-column: 1 / -1;
+        }
+        
+        label { 
             font-size: 14px;
-            transition: border-color 0.2s;
-            outline: none;
+            font-weight: 600;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        select:focus, input:focus { border-color: #1a73e8; }
+        
+        label .icon {
+            font-size: 16px;
+        }
+        
+        select, input {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+            background: white;
+        }
+        
+        select:focus, input:focus { 
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5568' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        
         .btn-generate {
             width: 100%;
-            padding: 14px;
-            background: #1a73e8;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.2s;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
-        .btn-generate:hover { background: #1557b0; }
+        
+        .btn-generate:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
         .btn-generate:disabled {
-            background: #ccc;
+            background: #cbd5e0;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
+        
         .output-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
+        
         .btn-download {
-            padding: 10px 20px;
-            background: #34a853;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 14px;
+            border-radius: 10px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
         }
-        .btn-download:hover { background: #2d8f47; }
+        
+        .btn-download:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
+        }
+        
         .questions-box {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            font-size: 14px;
-            line-height: 1.8;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 25px;
+            font-size: 15px;
+            line-height: 1.9;
             white-space: pre-wrap;
-            border-left: 4px solid #1a73e8;
+            border-left: 5px solid #667eea;
+            font-family: 'Courier New', monospace;
         }
+        
         .loading {
             display: none;
             text-align: center;
-            padding: 20px;
-            color: #1a73e8;
-            font-weight: 600;
+            padding: 30px 20px;
         }
+        
         .spinner {
-            border: 3px solid #f0f4f8;
-            border-top: 3px solid #1a73e8;
+            border: 4px solid #f0f4f8;
+            border-top: 4px solid #667eea;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            margin: 0 auto 15px;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .badge {
-            background: #e8f0fe;
-            color: #1a73e8;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 12px;
+        
+        .loading-text {
+            color: #4a5568;
             font-weight: 600;
+            font-size: 16px;
         }
-        .rate-limit-info {
-            background: #e8f5e9;
-            border-left: 4px solid #34a853;
-            padding: 12px 16px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #2e7d32;
+        
+        @keyframes spin { 
+            to { transform: rotate(360deg); }
         }
-        .rate-limit-warning {
-            background: #fff3cd;
-            border-left: 4px solid #ffa000;
-            padding: 12px 16px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #8a6400;
-        }
+        
         .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 12px 16px;
-            margin-top: 15px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #1565c0;
+            background: linear-gradient(135deg, #ebf4ff 0%, #e1e8f5 100%);
+            border-left: 5px solid #4299e1;
+            padding: 15px 18px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #2c5282;
+            display: flex;
+            align-items: start;
+            gap: 12px;
         }
-        .questions-box .answer {
-            color: #2e7d32;
+        
+        .info-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .rate-limit-info {
+            background: linear-gradient(135deg, #f0fff4 0%, #e6f7ed 100%);
+            border-left: 5px solid #48bb78;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #22543d;
             font-weight: 500;
-            margin-left: 20px;
-            border-left: 3px solid #34a853;
-            padding-left: 12px;
-            margin-top: 4px;
-            margin-bottom: 12px;
         }
-        .questions-box .question {
-            font-weight: 600;
-            color: #1a73e8;
-            margin-top: 8px;
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .header-left {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 25px 20px;
+            }
+            
+            .header-text h1 {
+                font-size: 24px;
+            }
+        }
+        
+        /* Tooltip for chapter field */
+        .help-text {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 4px;
+            font-weight: normal;
+        }
+        
+        /* Success animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .questions-box {
+            animation: fadeInUp 0.6s ease;
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div>
-        <h1>📚 T-PAL</h1>
-        <p>AI-Powered Question Paper Generator for Teachers</p>
+    <div class="header-left">
+        <div class="logo">📚</div>
+        <div class="header-text">
+            <h1>T-PAL</h1>
+            <p>AI-Powered Question Paper Generator</p>
+        </div>
     </div>
-    <span class="badge" style="margin-left:auto; background:rgba(255,255,255,0.2); color:white;">
-        NCERT Class 6-9
+    <span class="badge">
+        🎓 NCERT Class 6-9
     </span>
 </div>
 
 <div class="container">
     <div class="card">
-        <h2>⚡ Generate Question Paper</h2>
+        <h2><span class="emoji-icon">⚡</span> Generate Question Paper</h2>
         
         <div class="info-box">
-            📌 <strong>Free Tier Limits:</strong> 10 papers/hour, 30 papers/day per user.
+            <span class="info-icon">💡</span>
+            <div>
+                <strong>Free Tier Limits:</strong> 10 papers/hour, 30 papers/day.<br>
+                <small>Need more? Contact us for premium access.</small>
+            </div>
         </div>
         
         <form method="POST" action="/generate" id="generateForm" onsubmit="return handleSubmit()">
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Subject</label>
-                    <select name="subject">
-                        <option>Mathematics</option>
-                        <option>Science</option>
+                    <label><span class="icon">📖</span> Subject</label>
+                    <select name="subject" id="subjectSelect" onchange="updateChapters()">
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
                     </select>
                 </div>
+                
                 <div class="form-group">
-                    <label>Class</label>
+                    <label><span class="icon">🎓</span> Class</label>
                     <select name="class_num">
-                        <option>6</option>
-                        <option>7</option>
-                        <option selected>8</option>
-                        <option>9</option>
+                        <option value="6">Class 6</option>
+                        <option value="7">Class 7</option>
+                        <option value="8" selected>Class 8</option>
+                        <option value="9">Class 9</option>
                     </select>
                 </div>
+                
                 <div class="form-group full-width">
-                    <label>Chapter / Topic</label>
-                    <input type="text" name="chapter" 
-                           placeholder="e.g. Integers, Fractions, Motion, Cell Structure"
-                           required>
+                    <label><span class="icon">📝</span> Chapter / Topic</label>
+                    <select name="chapter" id="chapterSelect">
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                    <span class="help-text">💡 Select a chapter or type custom topic below</span>
+                    <input type="text" id="customChapter" 
+                           placeholder="Or enter custom topic (e.g., 'Decimals and Percentages')"
+                           style="margin-top: 8px;">
                 </div>
+                
                 <div class="form-group">
-                    <label>Number of Questions</label>
+                    <label><span class="icon">🔢</span> Number of Questions</label>
                     <select name="num_questions">
-                        <option>5</option>
-                        <option selected>10</option>
-                        <option>15</option>
-                        <option>20</option>
+                        <option value="5">5 Questions</option>
+                        <option value="10" selected>10 Questions</option>
+                        <option value="15">15 Questions</option>
+                        <option value="20">20 Questions</option>
                     </select>
                 </div>
+                
                 <div class="form-group">
-                    <label>Difficulty Level</label>
+                    <label><span class="icon">📊</span> Difficulty Level</label>
                     <select name="difficulty">
-                        <option>Easy</option>
-                        <option selected>Medium</option>
-                        <option>Hard</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Hard">Hard</option>
                     </select>
                 </div>
+                
                 <div class="form-group full-width">
-                    <label>Question Type</label>
+                    <label><span class="icon">❓</span> Question Type</label>
                     <select name="question_type">
                         <option value="Mixed">Mixed (MCQ + Short + Long)</option>
                         <option value="MCQ">Multiple Choice Questions (MCQ)</option>
@@ -233,6 +404,7 @@
                     </select>
                 </div>
             </div>
+            
             <button type="submit" class="btn-generate" id="submitBtn">
                 ⚡ Generate Questions
             </button>
@@ -240,7 +412,8 @@
         
         <div class="loading" id="loadingDiv">
             <div class="spinner"></div>
-            Generating questions from NCERT syllabus... This may take 15-20 seconds.
+            <div class="loading-text">Generating questions from NCERT syllabus...</div>
+            <div style="color: #718096; font-size: 13px; margin-top: 8px;">This may take 15-20 seconds</div>
         </div>
     </div>
 
@@ -248,12 +421,12 @@
     <div class="card">
         {% if rate_limit_info %}
         <div class="rate-limit-info">
-            {{ rate_limit_info }}
+            ✅ {{ rate_limit_info }}
         </div>
         {% endif %}
         
         <div class="output-header">
-            <h2>📝 Generated Questions</h2>
+            <h2><span class="emoji-icon">📝</span> Generated Questions</h2>
             <form method="POST" action="/download">
                 <input type="hidden" name="questions" value="{{ questions }}">
                 <input type="hidden" name="subject" value="{{ subject }}">
@@ -270,14 +443,96 @@
 </div>
 
 <script>
+// Chapter database by subject
+const chapters = {
+    Mathematics: [
+        "Integers",
+        "Fractions",
+        "Decimals",
+        "Rational Numbers",
+        "Linear Equations",
+        "Understanding Quadrilaterals",
+        "Data Handling",
+        "Squares and Square Roots",
+        "Cubes and Cube Roots",
+        "Comparing Quantities",
+        "Algebraic Expressions",
+        "Exponents and Powers",
+        "Direct and Inverse Proportions",
+        "Factorisation",
+        "Introduction to Graphs",
+        "Playing with Numbers"
+    ],
+    Science: [
+        "Crop Production and Management",
+        "Microorganisms",
+        "Synthetic Fibres and Plastics",
+        "Materials - Metals and Non-Metals",
+        "Coal and Petroleum",
+        "Combustion and Flame",
+        "Conservation of Plants and Animals",
+        "Cell Structure and Functions",
+        "Reproduction in Animals",
+        "Reaching the Age of Adolescence",
+        "Force and Pressure",
+        "Friction",
+        "Sound",
+        "Chemical Effects of Electric Current",
+        "Some Natural Phenomena",
+        "Light",
+        "Stars and Solar System",
+        "Pollution of Air and Water"
+    ]
+};
+
+function updateChapters() {
+    const subject = document.getElementById('subjectSelect').value;
+    const chapterSelect = document.getElementById('chapterSelect');
+    
+    // Clear existing options
+    chapterSelect.innerHTML = '<option value="">-- Select a Chapter --</option>';
+    
+    // Add chapters for selected subject
+    chapters[subject].forEach(chapter => {
+        const option = document.createElement('option');
+        option.value = chapter;
+        option.textContent = chapter;
+        chapterSelect.appendChild(option);
+    });
+}
+
+// Initialize chapters on page load
+window.onload = function() {
+    updateChapters();
+};
+
+// Handle form submission
 function handleSubmit() {
+    // Check if custom chapter is entered
+    const customChapter = document.getElementById('customChapter').value.trim();
+    const chapterSelect = document.getElementById('chapterSelect');
+    
+    if (customChapter) {
+        // Create hidden input with custom chapter value
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'chapter';
+        hiddenInput.value = customChapter;
+        document.getElementById('generateForm').appendChild(hiddenInput);
+        
+        // Disable the select so it doesn't submit
+        chapterSelect.disabled = true;
+    } else if (!chapterSelect.value) {
+        alert('Please select a chapter or enter a custom topic');
+        return false;
+    }
+    
     // Show loading state
     document.getElementById('loadingDiv').style.display = 'block';
     var btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.textContent = 'Generating... Please wait';
+    btn.innerHTML = '⏳ Generating...';
     
-    // Allow form to submit
     return true;
 }
 </script>
