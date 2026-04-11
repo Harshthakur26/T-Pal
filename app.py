@@ -138,12 +138,12 @@ def generate():
     try:
         # *** SECURITY LAYER 2 & 3: USER AUTHENTICATION CHECK ***
         # Check if user is logged in via session
-        if not session.get('user'):
-            return render_template("index.html", 
-                                 questions="❌ Please login first. <a href='/login'>Click here to Login</a>",
-                                 subject="",
-                                 class_num="",
-                                 chapter=""), 401
+        # if not session.get('user'):
+        #     return render_template("index.html", 
+        #                          questions="❌ Please login first. <a href='/login'>Click here to Login</a>",
+        #                          subject="",
+        #                          class_num="",
+        #                          chapter=""), 401
         
         # Load user usage data and check if trial limit exceeded
         usage_data = load_user_usage()
