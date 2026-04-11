@@ -265,6 +265,13 @@
             font-weight: 500;
         }
         
+        .help-text {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 4px;
+            font-weight: normal;
+        }
+        
         /* Mobile responsive */
         @media (max-width: 768px) {
             .header {
@@ -292,15 +299,6 @@
             }
         }
         
-        /* Tooltip for chapter field */
-        .help-text {
-            font-size: 12px;
-            color: #718096;
-            margin-top: 4px;
-            font-weight: normal;
-        }
-        
-        /* Success animation */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -344,11 +342,11 @@
             </div>
         </div>
         
-        <form method="POST" action="/generate" id="generateForm" onsubmit="return handleSubmit()">
+        <form method="POST" action="/generate" id="generateForm">
             <div class="form-grid">
                 <div class="form-group">
                     <label><span class="icon">📖</span> Subject</label>
-                    <select name="subject" id="subjectSelect" onchange="updateChapters()">
+                    <select name="subject" id="subjectSelect">
                         <option value="Mathematics">Mathematics</option>
                         <option value="Science">Science</option>
                     </select>
@@ -356,7 +354,7 @@
                 
                 <div class="form-group">
                     <label><span class="icon">🎓</span> Class</label>
-                    <select name="class_num">
+                    <select name="class_num" id="classSelect">
                         <option value="6">Class 6</option>
                         <option value="7">Class 7</option>
                         <option value="8" selected>Class 8</option>
@@ -366,13 +364,12 @@
                 
                 <div class="form-group full-width">
                     <label><span class="icon">📝</span> Chapter / Topic</label>
-                    <select name="chapter" id="chapterSelect">
-                        <!-- Will be populated by JavaScript -->
+                    <select name="chapter" id="chapterSelect" required>
+                        <option value="">-- Select a Chapter --</option>
                     </select>
-                    <span class="help-text">💡 Select a chapter or type custom topic below</span>
+                    <span class="help-text">💡 Select a chapter or enter custom topic below</span>
                     <input type="text" id="customChapter" 
-                           placeholder="Or enter custom topic (e.g., 'Decimals and Percentages')"
-                           style="margin-top: 8px;">
+                           placeholder="Or enter custom topic (e.g., 'Decimals and Percentages')">
                 </div>
                 
                 <div class="form-group">
@@ -443,57 +440,173 @@
 </div>
 
 <script>
-// Chapter database by subject
-const chapters = {
-    Mathematics: [
-        "Integers",
-        "Fractions",
-        "Decimals",
-        "Rational Numbers",
-        "Linear Equations",
-        "Understanding Quadrilaterals",
-        "Data Handling",
-        "Squares and Square Roots",
-        "Cubes and Cube Roots",
-        "Comparing Quantities",
-        "Algebraic Expressions",
-        "Exponents and Powers",
-        "Direct and Inverse Proportions",
-        "Factorisation",
-        "Introduction to Graphs",
-        "Playing with Numbers"
-    ],
-    Science: [
-        "Crop Production and Management",
-        "Microorganisms",
-        "Synthetic Fibres and Plastics",
-        "Materials - Metals and Non-Metals",
-        "Coal and Petroleum",
-        "Combustion and Flame",
-        "Conservation of Plants and Animals",
-        "Cell Structure and Functions",
-        "Reproduction in Animals",
-        "Reaching the Age of Adolescence",
-        "Force and Pressure",
-        "Friction",
-        "Sound",
-        "Chemical Effects of Electric Current",
-        "Some Natural Phenomena",
-        "Light",
-        "Stars and Solar System",
-        "Pollution of Air and Water"
-    ]
+// COMPREHENSIVE chapter database by class AND subject
+const chaptersByClass = {
+    Mathematics: {
+        6: [
+            "Knowing Our Numbers",
+            "Whole Numbers",
+            "Playing with Numbers",
+            "Basic Geometrical Ideas",
+            "Understanding Elementary Shapes",
+            "Integers",
+            "Fractions",
+            "Decimals",
+            "Data Handling",
+            "Mensuration",
+            "Algebra",
+            "Ratio and Proportion",
+            "Symmetry",
+            "Practical Geometry"
+        ],
+        7: [
+            "Integers",
+            "Fractions and Decimals",
+            "Data Handling",
+            "Simple Equations",
+            "Lines and Angles",
+            "The Triangle and Its Properties",
+            "Congruence of Triangles",
+            "Comparing Quantities",
+            "Rational Numbers",
+            "Practical Geometry",
+            "Perimeter and Area",
+            "Algebraic Expressions",
+            "Exponents and Powers",
+            "Symmetry",
+            "Visualising Solid Shapes"
+        ],
+        8: [
+            "Rational Numbers",
+            "Linear Equations in One Variable",
+            "Understanding Quadrilaterals",
+            "Data Handling",
+            "Squares and Square Roots",
+            "Cubes and Cube Roots",
+            "Comparing Quantities",
+            "Algebraic Expressions and Identities",
+            "Mensuration",
+            "Exponents and Powers",
+            "Direct and Inverse Proportions",
+            "Factorisation",
+            "Introduction to Graphs",
+            "Playing with Numbers"
+        ],
+        9: [
+            "Number Systems",
+            "Polynomials",
+            "Coordinate Geometry",
+            "Linear Equations in Two Variables",
+            "Introduction to Euclid's Geometry",
+            "Lines and Angles",
+            "Triangles",
+            "Quadrilaterals",
+            "Circles",
+            "Heron's Formula",
+            "Surface Areas and Volumes",
+            "Statistics",
+            "Probability"
+        ]
+    },
+    Science: {
+        6: [
+            "Food - Where Does It Come From",
+            "Components of Food",
+            "Fibre to Fabric",
+            "Sorting Materials into Groups",
+            "Separation of Substances",
+            "Changes Around Us",
+            "Getting to Know Plants",
+            "Body Movements",
+            "The Living Organisms and Their Surroundings",
+            "Motion and Measurement of Distances",
+            "Light, Shadows and Reflections",
+            "Electricity and Circuits",
+            "Fun with Magnets",
+            "Water",
+            "Air Around Us",
+            "Garbage In, Garbage Out"
+        ],
+        7: [
+            "Nutrition in Plants",
+            "Nutrition in Animals",
+            "Fibre to Fabric",
+            "Heat",
+            "Acids, Bases and Salts",
+            "Physical and Chemical Changes",
+            "Weather, Climate and Adaptations",
+            "Winds, Storms and Cyclones",
+            "Soil",
+            "Respiration in Organisms",
+            "Transportation in Animals and Plants",
+            "Reproduction in Plants",
+            "Motion and Time",
+            "Electric Current and Its Effects",
+            "Light",
+            "Water - A Precious Resource",
+            "Forests - Our Lifeline",
+            "Wastewater Story"
+        ],
+        8: [
+            "Crop Production and Management",
+            "Microorganisms",
+            "Synthetic Fibres and Plastics",
+            "Materials - Metals and Non-Metals",
+            "Coal and Petroleum",
+            "Combustion and Flame",
+            "Conservation of Plants and Animals",
+            "Cell Structure and Functions",
+            "Reproduction in Animals",
+            "Reaching the Age of Adolescence",
+            "Force and Pressure",
+            "Friction",
+            "Sound",
+            "Chemical Effects of Electric Current",
+            "Some Natural Phenomena",
+            "Light",
+            "Stars and Solar System",
+            "Pollution of Air and Water"
+        ],
+        9: [
+            "Matter in Our Surroundings",
+            "Is Matter Around Us Pure",
+            "Atoms and Molecules",
+            "Structure of the Atom",
+            "The Fundamental Unit of Life",
+            "Tissues",
+            "Diversity in Living Organisms",
+            "Motion",
+            "Force and Laws of Motion",
+            "Gravitation",
+            "Work and Energy",
+            "Sound",
+            "Why Do We Fall Ill",
+            "Natural Resources",
+            "Improvement in Food Resources"
+        ]
+    }
 };
 
+// Get DOM elements
+const classSelect = document.getElementById('classSelect');
+const subjectSelect = document.getElementById('subjectSelect');
+const chapterSelect = document.getElementById('chapterSelect');
+const customChapter = document.getElementById('customChapter');
+const form = document.getElementById('generateForm');
+
+// Function to update chapters based on selected class and subject
 function updateChapters() {
-    const subject = document.getElementById('subjectSelect').value;
-    const chapterSelect = document.getElementById('chapterSelect');
+    const selectedClass = classSelect.value;
+    const selectedSubject = subjectSelect.value;
+    
+    // Get chapters for selected class and subject
+    const chapters = chaptersByClass[selectedSubject][selectedClass] || [];
     
     // Clear existing options
     chapterSelect.innerHTML = '<option value="">-- Select a Chapter --</option>';
     
-    // Add chapters for selected subject
-    chapters[subject].forEach(chapter => {
+    // Add new chapter options
+    chapters.forEach(chapter => {
         const option = document.createElement('option');
         option.value = chapter;
         option.textContent = chapter;
@@ -501,40 +614,43 @@ function updateChapters() {
     });
 }
 
-// Initialize chapters on page load
-window.onload = function() {
-    updateChapters();
-};
+// Listen for class or subject change
+classSelect.addEventListener('change', updateChapters);
+subjectSelect.addEventListener('change', updateChapters);
 
 // Handle form submission
-function handleSubmit() {
-    // Check if custom chapter is entered
-    const customChapter = document.getElementById('customChapter').value.trim();
-    const chapterSelect = document.getElementById('chapterSelect');
+form.addEventListener('submit', function(e) {
+    const chapterValue = chapterSelect.value;
+    const customValue = customChapter.value.trim();
     
-    if (customChapter) {
-        // Create hidden input with custom chapter value
+    // If custom chapter is entered, use that
+    if (customValue !== "") {
+        // Create hidden input with custom chapter
         const hiddenInput = document.createElement('input');
         hiddenInput.type = 'hidden';
         hiddenInput.name = 'chapter';
-        hiddenInput.value = customChapter;
-        document.getElementById('generateForm').appendChild(hiddenInput);
+        hiddenInput.value = customValue;
+        form.appendChild(hiddenInput);
         
-        // Disable the select so it doesn't submit
+        // Disable select so it doesn't submit
         chapterSelect.disabled = true;
-    } else if (!chapterSelect.value) {
-        alert('Please select a chapter or enter a custom topic');
+    } else if (chapterValue === "") {
+        // Neither dropdown nor custom filled
+        e.preventDefault();
+        alert("Please select a chapter or enter a custom topic");
         return false;
     }
     
-    // Show loading state
+    // Show loading
     document.getElementById('loadingDiv').style.display = 'block';
-    var btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Generating...';
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').innerHTML = '⏳ Generating...';
     
     return true;
-}
+});
+
+// Initialize chapters on page load
+updateChapters();
 </script>
 
 </body>
