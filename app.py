@@ -1,5 +1,6 @@
 # *** SECURITY LAYER 1: ENHANCED IMPORTS FOR AUTHENTICATION & USER TRACKING ***
-from flask import Flask, render_template, request, make_response, session, redirect, url_for
+from flask import Flask, render_template, request, make_response
+# from flask import Flask, render_template, request, make_response, session, redirect, url_for  # Commented out session, redirect, url_for
 from rag import generate_questions
 import secrets
 import hashlib
@@ -15,24 +16,24 @@ import os
 
 app = Flask(__name__)
 # *** SECURITY LAYER 1: ENHANCED SECRET KEY GENERATION ***
-app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+# app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))  # COMMENTED OUT - Session management disabled
 # *** END SECURITY LAYER 1 ***
 
 # *** SECURITY LAYER 2: USER AUTHENTICATION & USAGE TRACKING SETUP ***
 # User usage file for tracking requests per user
-USAGE_FILE = 'user_usage.json'
+# USAGE_FILE = 'user_usage.json'  # COMMENTED OUT - Session management disabled
 
-def load_user_usage():
-    """Load user usage data from JSON file"""
-    if os.path.exists(USAGE_FILE):
-        with open(USAGE_FILE, 'r') as f:
-            return json.load(f)
-    return {}
+# def load_user_usage():
+#     """Load user usage data from JSON file"""
+#     if os.path.exists(USAGE_FILE):
+#         with open(USAGE_FILE, 'r') as f:
+#             return json.load(f)
+#     return {}
 
-def save_user_usage(usage_data):
-    """Save user usage data to JSON file"""
-    with open(USAGE_FILE, 'w') as f:
-        json.dump(usage_data, f)
+# def save_user_usage(usage_data):
+#     """Save user usage data to JSON file"""
+#     with open(USAGE_FILE, 'w') as f:
+#         json.dump(usage_data, f)
 # *** END SECURITY LAYER 2 SETUP ***
 
 # Rate limiting storage (in-memory for free tier)
@@ -92,41 +93,42 @@ def check_rate_limit(ip_address):
     return True, f"✅ Used: {ip_data['hourly_count']}/{REQUESTS_PER_HOUR} (hour), {ip_data['daily_count']}/{REQUESTS_PER_DAY} (day)"
 
 # *** SECURITY LAYER 3: USER LOGIN ROUTE ***
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    """User login endpoint - WARNING: Hardcoded credentials for demo. Use database in production!"""
-    if request.method == 'POST':
-        username = request.form.get('username', '')
-        password = request.form.get('password', '')
-        # ⚠️ SECURITY NOTE: This is a simple demo authentication.
-        # TODO: Move to proper database with hashed passwords for production!
-        if username == "teacher1" and password == "tpal123":
-            session['user'] = username
-            return redirect(url_for('home'))
-        else:
-            return render_template("index.html", questions="❌ Invalid credentials, please try again."), 401
-    return '''<!DOCTYPE html>
-    <html>
-    <head><title>T-Pal Login</title>
-    <style>
-        body { font-family: Arial; margin: 50px; }
-        form { max-width: 300px; }
-        input { display: block; margin: 10px 0; padding: 8px; width: 100%; }
-        input[type="submit"] { cursor: pointer; background-color: #4CAF50; color: white; border: none; }
-    </style>
-    </head>
-    <body>
-    <h2>T-Pal Teacher Login</h2>
-    <form method="post">
-        <label for="username"><b>Username:</b></label>
-        <input type="text" name="username" id="username" required>
-        <label for="password"><b>Password:</b></label>
-        <input type="password" name="password" id="password" required>
-        <input type="submit" value="Login">
-    </form>
-    <p><small>Demo: username | password</small></p>
-    </body>
-    </html>'''
+# COMMENTED OUT - Session management disabled
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     """User login endpoint - WARNING: Hardcoded credentials for demo. Use database in production!"""
+#     if request.method == 'POST':
+#         username = request.form.get('username', '')
+#         password = request.form.get('password', '')
+#         # ⚠️ SECURITY NOTE: This is a simple demo authentication.
+#         # TODO: Move to proper database with hashed passwords for production!
+#         if username == "teacher1" and password == "tpal123":
+#             session['user'] = username
+#             return redirect(url_for('home'))
+#         else:
+#             return render_template("index.html", questions="❌ Invalid credentials, please try again."), 401
+#     return '''<!DOCTYPE html>
+#     <html>
+#     <head><title>T-Pal Login</title>
+#     <style>
+#         body { font-family: Arial; margin: 50px; }
+#         form { max-width: 300px; }
+#         input { display: block; margin: 10px 0; padding: 8px; width: 100%; }
+#         input[type="submit"] { cursor: pointer; background-color: #4CAF50; color: white; border: none; }
+#     </style>
+#     </head>
+#     <body>
+#     <h2>T-Pal Teacher Login</h2>
+#     <form method="post">
+#         <label for="username"><b>Username:</b></label>
+#         <input type="text" name="username" id="username" required>
+#         <label for="password"><b>Password:</b></label>
+#         <input type="password" name="password" id="password" required>
+#         <input type="submit" value="Login">
+#     </form>
+#     <p><small>Demo: username | password</small></p>
+#     </body>
+#     </html>'''
 # *** END SECURITY LAYER 3 ***
 
 @app.route("/")
@@ -146,15 +148,16 @@ def generate():
         #                          chapter=""), 401
         
         # Load user usage data and check if trial limit exceeded
-        usage_data = load_user_usage()
-        user_data = usage_data.get(session['user'], {'requests_made': 0, 'trial_limit': 10})
-        
-        if user_data['requests_made'] >= user_data['trial_limit']:
-            return render_template("index.html",
-                                   questions=f"❌ Your free trial limit ({user_data['trial_limit']} requests) has been used.<br>Requests used: {user_data['requests_made']}/{user_data['trial_limit']}<br>Please contact admin.",
-                                   subject="",
-                                   class_num="",
-                                   chapter="")
+        # COMMENTED OUT - Session management disabled
+        # usage_data = load_user_usage()
+        # user_data = usage_data.get(session['user'], {'requests_made': 0, 'trial_limit': 10})
+        # 
+        # if user_data['requests_made'] >= user_data['trial_limit']:
+        #     return render_template("index.html",
+        #                            questions=f"❌ Your free trial limit ({user_data['trial_limit']} requests) has been used.<br>Requests used: {user_data['requests_made']}/{user_data['trial_limit']}<br>Please contact admin.",
+        #                            subject="",
+        #                            class_num="",
+        #                            chapter="")
         # *** END SECURITY LAYER 2 & 3 CHECK ***
         
         # Get client IP address
@@ -188,10 +191,11 @@ def generate():
         
         # *** SECURITY LAYER 2 & 3: INCREMENT USER REQUEST COUNTER ***
         # Track this successful generation request for the logged-in user
-        user_data['requests_made'] += 1
-        usage_data[session['user']] = user_data
-        save_user_usage(usage_data)
-        print(f"📊 User '{session['user']}' usage updated: {user_data['requests_made']}/{user_data['trial_limit']} requests used")
+        # COMMENTED OUT - Session management disabled
+        # user_data['requests_made'] += 1
+        # usage_data[session['user']] = user_data
+        # save_user_usage(usage_data)
+        # print(f"📊 User '{session['user']}' usage updated: {user_data['requests_made']}/{user_data['trial_limit']} requests used")
         # *** END SECURITY LAYER 2 & 3 TRACKING ***
         
         return render_template("index.html", 
@@ -207,78 +211,80 @@ def generate():
         return f"Error: {str(e)}", 500
 
 # *** SECURITY LAYER 3: ADMIN DASHBOARD ROUTE ***
-@app.route('/admin', methods=['GET'])
-def admin():
-    """Admin dashboard to view user usage statistics"""
-    # ⚠️ SECURITY NOTE: Check if user is 'teacher1' (the admin user)
-    if session.get('user') != 'teacher1':
-        return render_template("index.html", questions="❌ Access Denied! Only admin (teacher1) can view this page."), 401
-    
-    # Load and display all user usage data
-    usage_data = load_user_usage()
-    
-    # Build HTML table for admin dashboard
-    admin_html = '''<!DOCTYPE html>
-    <html>
-    <head>
-        <title>T-Pal Admin Dashboard</title>
-        <style>
-            body { font-family: Arial; margin: 20px; }
-            table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-            th { background-color: #4CAF50; color: white; }
-            tr:nth-child(even) { background-color: #f2f2f2; }
-            .stats { background-color: #e7f3fe; padding: 10px; margin-bottom: 20px; border-radius: 5px; }
-        </style>
-    </head>
-    <body>
-        <h1>👨‍💼 T-Pal Admin Dashboard</h1>
-        <a href="/logout" style="color: red; text-decoration: underline;">Logout</a>
-        
-        <div class="stats">
-            <h3>📊 System Statistics</h3>
-            <p><b>Total Users:</b> {total_users}</p>
-            <p><b>Total Requests Made:</b> {total_requests}</p>
-        </div>
-        
-        <h2>User Usage Details</h2>
-        <table>
-            <tr>
-                <th>Username</th>
-                <th>Requests Made</th>
-                <th>Trial Limit</th>
-                <th>Status</th>
-            </tr>
-            {table_rows}
-        </table>
-    </body>
-    </html>'''
-    
-    # Calculate statistics
-    total_users = len(usage_data)
-    total_requests = sum([user['requests_made'] for user in usage_data.values()])
-    
-    # Build table rows
-    table_rows = ""
-    for user, data in usage_data.items():
-        status = "✅ Active" if data['requests_made'] < data['trial_limit'] else "❌ Limit Reached"
-        table_rows += f"<tr><td>{user}</td><td>{data['requests_made']}</td><td>{data['trial_limit']}</td><td>{status}</td></tr>\n"
-    
-    admin_html = admin_html.format(
-        total_users=total_users,
-        total_requests=total_requests,
-        table_rows=table_rows
-    )
-    
-    return admin_html
+# COMMENTED OUT - Session management disabled
+# @app.route('/admin', methods=['GET'])
+# def admin():
+#     """Admin dashboard to view user usage statistics"""
+#     # ⚠️ SECURITY NOTE: Check if user is 'teacher1' (the admin user)
+#     if session.get('user') != 'teacher1':
+#         return render_template("index.html", questions="❌ Access Denied! Only admin (teacher1) can view this page."), 401
+#     
+#     # Load and display all user usage data
+#     usage_data = load_user_usage()
+#     
+#     # Build HTML table for admin dashboard
+#     admin_html = '''<!DOCTYPE html>
+#     <html>
+#     <head>
+#         <title>T-Pal Admin Dashboard</title>
+#         <style>
+#             body { font-family: Arial; margin: 20px; }
+#             table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+#             th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+#             th { background-color: #4CAF50; color: white; }
+#             tr:nth-child(even) { background-color: #f2f2f2; }
+#             .stats { background-color: #e7f3fe; padding: 10px; margin-bottom: 20px; border-radius: 5px; }
+#         </style>
+#     </head>
+#     <body>
+#         <h1>👨‍💼 T-Pal Admin Dashboard</h1>
+#         <a href="/logout" style="color: red; text-decoration: underline;">Logout</a>
+#         
+#         <div class="stats">
+#             <h3>📊 System Statistics</h3>
+#             <p><b>Total Users:</b> {total_users}</p>
+#             <p><b>Total Requests Made:</b> {total_requests}</p>
+#         </div>
+#         
+#         <h2>User Usage Details</h2>
+#         <table>
+#             <tr>
+#                 <th>Username</th>
+#                 <th>Requests Made</th>
+#                 <th>Trial Limit</th>
+#                 <th>Status</th>
+#             </tr>
+#             {table_rows}
+#         </table>
+#     </body>
+#     </html>'''
+#     
+#     # Calculate statistics
+#     total_users = len(usage_data)
+#     total_requests = sum([user['requests_made'] for user in usage_data.values()])
+#     
+#     # Build table rows
+#     table_rows = ""
+#     for user, data in usage_data.items():
+#         status = "✅ Active" if data['requests_made'] < data['trial_limit'] else "❌ Limit Reached"
+#         table_rows += f"<tr><td>{user}</td><td>{data['requests_made']}</td><td>{data['trial_limit']}</td><td>{status}</td></tr>\n"
+#     
+#     admin_html = admin_html.format(
+#         total_users=total_users,
+#         total_requests=total_requests,
+#         table_rows=table_rows
+#     )
+#     
+#     return admin_html
 # *** END SECURITY LAYER 3 ***
 
 # *** SECURITY LAYER 1: LOGOUT ROUTE ***
-@app.route('/logout')
-def logout():
-    """Simple logout - clears session"""
-    session.clear()
-    return redirect('/login')
+# COMMENTED OUT - Session management disabled
+# @app.route('/logout')
+# def logout():
+#     """Simple logout - clears session"""
+#     session.clear()
+#     return redirect('/login')
 # *** END SECURITY LAYER 1 ***
 
 @app.route("/download", methods=["POST"])
