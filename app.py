@@ -124,7 +124,7 @@ def login():
         <input type="password" name="password" id="password" required>
         <input type="submit" value="Login">
     </form>
-    <p><small>Demo: username=teacher1 | password=tpal123</small></p>
+    <p><small>Demo: username | password</small></p>
     </body>
     </html>'''
 # *** END SECURITY LAYER 3 ***
