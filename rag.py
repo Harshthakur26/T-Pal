@@ -27,37 +27,61 @@ def read_pdfs(folder_path="data"):
 
 # CODE ADDED: New function to read PDFs for specific subject and class
 def read_pdfs_for_class(subject, class_num):
-    """Read PDFs only for specific subject and class to avoid mixing content"""
-    # CODE ADDED: Build the folder path based on subject and class number
-    folder_path = f"data/{subject}/{class_num}"
-    all_text = ""
+    """Read PDFs only for specific subject and class with smart folder detection"""
+    # CODE ADDED: Normalize subject name to handle variations: "Mathematics", "Math", "Maths"
+    # Also handle case where user selects "Maths" or "Math" but we have "Mathematics" folder
+    subject_folder = subject
+    if subject.lower() in ["mathematics", "math", "maths"]:
+        # CODE ADDED: Convert to standard "Mathematics" folder name
+        subject_folder = "Mathematics"
+    elif subject.lower() == "science":
+        # CODE ADDED: Keep Science as is
+        subject_folder = "Science"
     
-    # CODE ADDED: Check if the folder exists before trying to read PDFs
-    if not os.path.exists(folder_path):
-        print(f"⚠️ Folder not found: {folder_path}")
-        return all_text
+    # CODE ADDED: Try multiple possible folder structures (handles different naming conventions)
+    possible_folders = [
+        f"data/{subject_folder}/{class_num}",
+        f"data/{subject}/{class_num}",
+        f"data/{class_num}",
+        "data"
+    ]
     
-    # CODE ADDED: Walk through the folder to find all PDF files
-    for root, dirs, files in os.walk(folder_path):
-        for file in files:
-            if file.endswith(".pdf"):
-                filepath = os.path.join(root, file)
-                try:
-                    reader = PdfReader(filepath)
-                    # CODE ADDED: Extract text from all pages in the PDF
-                    for page in reader.pages:
+    # CODE ADDED: Loop through possible folder paths until one is found with PDFs
+    for folder_path in possible_folders:
+        if os.path.exists(folder_path):
+            print(f"DEBUG: Trying folder: {folder_path}")
+            all_text = ""
+            pdf_count = 0
+            # CODE ADDED: Walk through folder to find PDF files
+            for root, dirs, files in os.walk(folder_path):
+                for file in files:
+                    if file.endswith(".pdf"):
+                        pdf_count += 1
+                        filepath = os.path.join(root, file)
                         try:
-                            text = page.extract_text()
-                            if text:
-                                all_text += text + "\n"
+                            reader = PdfReader(filepath)
+                            # CODE ADDED: Extract text from all pages in the PDF
+                            for page in reader.pages:
+                                try:
+                                    text = page.extract_text()
+                                    if text:
+                                        all_text += text + "\n"
+                                except Exception as e:
+                                    print(f"⚠️ Error reading page from {file}: {e}")
                         except Exception as e:
-                            print(f"⚠️ Error reading page from {file}: {e}")
-                except Exception as e:
-                    print(f"⚠️ Error reading file {file}: {e}")
+                            print(f"⚠️ Error reading file {file}: {e}")
+            # CODE ADDED: If PDFs found, return the content
+            if pdf_count > 0:
+                print(f"DEBUG: Found {pdf_count} PDFs, loaded {len(all_text)} chars")
+                return all_text
+            else:
+                print(f"DEBUG: No PDFs found in {folder_path}")
+        else:
+            print(f"DEBUG: Folder not found: {folder_path}")
     
-    # CODE ADDED: Log the amount of content loaded for this subject and class
-    print(f"Loaded {len(all_text)} characters for {subject} Class {class_num}")
-    return all_text
+    # CODE ADDED: If no PDFs found in any folder, return empty string
+    print(f"⚠️ No PDFs found for {subject} Class {class_num}")
+    return ""
 
 # Load PDFs once when app starts
 # print("Reading PDFs...")
@@ -297,11 +321,11 @@ Add GROQ_API_KEY in Environment Variables section"""
         print(f"📚 Loading PDFs for {subject} Class {class_num}...")
         pdf_text = read_pdfs_for_class(subject, class_num)
         
-        # CODE ADDED: Fallback mechanism if specific folder not found
+        # CODE ADDED: Check if PDF loading succeeded, if not return error message to user
         if not pdf_text:
-            print(f"⚠️ No PDFs found for {subject} Class {class_num}, trying alternative approach")
-            # Try loading from all data if specific class folder doesn't exist
-            pdf_text = read_pdfs("data")
+            print("DEBUG: No PDF text loaded, returning error message to user")
+            # CODE ADDED: Return helpful error instead of crashing
+            return "❌ Error: No textbook content found for this subject and class. Please contact support."
         
         # CODE ADDED: Now use the loaded pdf_text instead of global NCERT_TEXT
         print(f"📚 Searching for relevant {subject} content about '{chapter}'...")
