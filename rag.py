@@ -3,13 +3,24 @@ from groq import Groq
 from pypdf import PdfReader
 
 def read_pdfs(folder_path="data"):
-    """Read all PDF files from the data folder"""
+    """Read all PDF files from the data folder - FLEXIBLE VERSION
+    
+    This version works with ANY folder structure:
+    - data/*.pdf (all PDFs in root)
+    - data/Science/*.pdf (PDFs in subject folders)
+    - data/Science/6/*.pdf (PDFs in class subfolders)
+    """
     all_text = ""
+    pdf_count = 0
+    
+    print(f"📂 Searching for PDFs in: {folder_path}")
     
     for root, dirs, files in os.walk(folder_path):
         for file in files:
             if file.endswith(".pdf"):
+                pdf_count += 1
                 filepath = os.path.join(root, file)
+                print(f"   📄 Reading: {file}")
                 try:
                     reader = PdfReader(filepath)
                     for page in reader.pages:
@@ -18,75 +29,25 @@ def read_pdfs(folder_path="data"):
                             if text:
                                 all_text += text + "\n"
                         except Exception as e:
-                            print(f"⚠️ Error reading page from {file}: {e}")
+                            print(f"   ⚠️ Error reading page from {file}: {e}")
                 except Exception as e:
-                    print(f"⚠️ Error reading file {file}: {e}")
+                    print(f"   ⚠️ Error reading file {file}: {e}")
     
-    print(f"Loaded PDF text: {len(all_text)} characters from {folder_path}")
+    print(f"✅ Loaded {pdf_count} PDFs ({len(all_text)} characters)")
     return all_text
 
-# CODE ADDED: New function to read PDFs for specific subject and class
-def read_pdfs_for_class(subject, class_num):
-    """Read PDFs only for specific subject and class with smart folder detection"""
-    # CODE ADDED: Normalize subject name to handle variations: "Mathematics", "Math", "Maths"
-    # Also handle case where user selects "Maths" or "Math" but we have "Mathematics" folder
-    subject_folder = subject
-    if subject.lower() in ["mathematics", "math", "maths"]:
-        # CODE ADDED: Convert to standard "Mathematics" folder name
-        subject_folder = "Mathematics"
-    elif subject.lower() == "science":
-        # CODE ADDED: Keep Science as is
-        subject_folder = "Science"
-    
-    # CODE ADDED: Try multiple possible folder structures (handles different naming conventions)
-    possible_folders = [
-        f"data/{subject_folder}/{class_num}",
-        f"data/{subject}/{class_num}",
-        f"data/{class_num}",
-        "data"
-    ]
-    
-    # CODE ADDED: Loop through possible folder paths until one is found with PDFs
-    for folder_path in possible_folders:
-        if os.path.exists(folder_path):
-            print(f"DEBUG: Trying folder: {folder_path}")
-            all_text = ""
-            pdf_count = 0
-            # CODE ADDED: Walk through folder to find PDF files
-            for root, dirs, files in os.walk(folder_path):
-                for file in files:
-                    if file.endswith(".pdf"):
-                        pdf_count += 1
-                        filepath = os.path.join(root, file)
-                        try:
-                            reader = PdfReader(filepath)
-                            # CODE ADDED: Extract text from all pages in the PDF
-                            for page in reader.pages:
-                                try:
-                                    text = page.extract_text()
-                                    if text:
-                                        all_text += text + "\n"
-                                except Exception as e:
-                                    print(f"⚠️ Error reading page from {file}: {e}")
-                        except Exception as e:
-                            print(f"⚠️ Error reading file {file}: {e}")
-            # CODE ADDED: If PDFs found, return the content
-            if pdf_count > 0:
-                print(f"DEBUG: Found {pdf_count} PDFs, loaded {len(all_text)} chars")
-                return all_text
-            else:
-                print(f"DEBUG: No PDFs found in {folder_path}")
-        else:
-            print(f"DEBUG: Folder not found: {folder_path}")
-    
-    # CODE ADDED: If no PDFs found in any folder, return empty string
-    print(f"⚠️ No PDFs found for {subject} Class {class_num}")
-    return ""
+# Load ALL PDFs once when app starts (SIMPLE AND WORKS!)
+print("=" * 60)
+print("🚀 LOADING NCERT TEXTBOOKS...")
+print("=" * 60)
+NCERT_TEXT = read_pdfs("data")
 
-# Load PDFs once when app starts
-# print("Reading PDFs...")
-# NCERT_TEXT = read_pdfs("data")
-# print("PDFs loaded successfully!")
+if len(NCERT_TEXT) < 1000:
+    print("⚠️  WARNING: Very little content loaded!")
+    print("⚠️  Make sure PDF files are in the 'data' folder")
+else:
+    print("✅ PDFs loaded successfully!")
+print("=" * 60 + "\n")
 
 def find_relevant_context(subject, chapter, full_text, max_chars=5000):
     """Find relevant sections from the text based on chapter/subject
@@ -105,14 +66,16 @@ def find_relevant_context(subject, chapter, full_text, max_chars=5000):
         exclusion_terms = [
             "equation", "solve for x", "linear equation", "quadratic",
             "polynomial", "algebra", "simplify", "calculate the value",
-            "factorisation", "factorise", "algebraic expression"
+            "factorisation", "factorise", "algebraic expression",
+            "rational number", "integer addition"
         ]
-    elif subject.lower() == "mathematics" or subject.lower() == "math":
+    elif subject.lower() in ["mathematics", "math", "maths"]:
         # Exclude pure science terms when searching for Math
         exclusion_terms = [
             "photosynthesis", "respiration", "cell", "tissue", "organism",
             "chemical reaction", "acid", "base", "ph", "reproduction",
-            "microorganism", "crop", "synthetic fibres", "combustion"
+            "microorganism", "crop", "synthetic fibres", "combustion",
+            "cytoplasm", "nucleus"
         ]
     
     # Split text into chunks (roughly by paragraphs/sections)
@@ -206,8 +169,6 @@ def validate_question_type(generated_text, expected_type):
         
         result = '\n'.join(filtered_lines)
         if not result.strip():
-            # If filtering removed everything, return original
-            # (better to have mixed questions than nothing)
             return generated_text
         return result
     
@@ -229,11 +190,9 @@ def validate_question_type(generated_text, expected_type):
                 is_mcq = False
             else:
                 current_question.append(line)
-                # Check if it's an MCQ
                 if any(line.startswith(opt) for opt in ['A)', 'B)', 'C)', 'D)']):
                     is_mcq = True
         
-        # Add last question if it's not MCQ
         if current_question and not is_mcq:
             filtered_lines.extend(current_question)
         
@@ -243,12 +202,10 @@ def validate_question_type(generated_text, expected_type):
         return result
     
     elif expected_type == "Long Answer":
-        # Similar to Short Answer but keep longer responses
         return validate_question_type(generated_text, "Short Answer")
     
     elif expected_type == "Numerical":
         # NEW: Filter to keep only numerical/calculation problems
-        # Look for mathematical symbols, equations, calculations
         current_question = []
         has_numbers = False
         
@@ -268,18 +225,14 @@ def validate_question_type(generated_text, expected_type):
                 # Check for numerical indicators
                 if any(char in line for char in ['=', '+', '-', '×', '÷', '²', '³', '%']):
                     has_numbers = True
-                # Check for numbers
                 if any(char.isdigit() for char in line):
                     has_numbers = True
         
-        # Add last question if it has numbers
         if current_question and has_numbers:
             filtered_lines.extend(current_question)
         
         result = '\n'.join(filtered_lines)
         if not result.strip():
-            # For numerical, if filtering removed everything, 
-            # return original (teacher feedback: need numericals!)
             return generated_text
         return result
     
@@ -290,6 +243,7 @@ def generate_questions(subject, class_num, chapter, num_questions, difficulty, q
     
     NEW: Added "Numerical" question type for math problems
     FIX: Better subject filtering to prevent cross-contamination
+    FIX: Uses global NCERT_TEXT (loaded once at startup)
     """
     
     print(f"\n{'='*60}")
@@ -317,19 +271,18 @@ Add GROQ_API_KEY in Environment Variables section"""
         # Initialize Groq client
         client = Groq(api_key=api_key)
         
-        # CODE ADDED: Load PDFs only for this specific subject and class
-        print(f"📚 Loading PDFs for {subject} Class {class_num}...")
-        pdf_text = read_pdfs_for_class(subject, class_num)
+        # Check if we have PDF content
+        if len(NCERT_TEXT) < 100:
+            return """❌ ERROR: No NCERT textbook content loaded!
+
+Please make sure:
+1. PDF files are in the 'data' folder
+2. PDFs are valid and readable
+3. Restart the app after adding PDFs"""
         
-        # CODE ADDED: Check if PDF loading succeeded, if not return error message to user
-        if not pdf_text:
-            print("DEBUG: No PDF text loaded, returning error message to user")
-            # CODE ADDED: Return helpful error instead of crashing
-            return "❌ Error: No textbook content found for this subject and class. Please contact support."
-        
-        # CODE ADDED: Now use the loaded pdf_text instead of global NCERT_TEXT
+        # Get relevant context from PDFs with STRICT subject filtering
         print(f"📚 Searching for relevant {subject} content about '{chapter}'...")
-        relevant_context = find_relevant_context(subject, chapter, pdf_text, max_chars=5000)
+        relevant_context = find_relevant_context(subject, chapter, NCERT_TEXT, max_chars=5000)
         
         # Build STRICT system message and prompt based on question type
         if question_type == "MCQ":
@@ -412,20 +365,33 @@ CRITICAL RULES:
 7. Focus on: Solve, Calculate, Find, Compute, Determine"""
             
             if subject.lower() in ["mathematics", "math", "maths"]:
-                # CODE ADDED: Simplified format for generating numerical problems with concise answers
-                format_instruction = """Generate ONLY NUMERICAL PROBLEMS with concise answers:
+                format_instruction = """Generate ONLY NUMERICAL PROBLEMS (calculation-based) in this EXACT format:
 
-Q1. [Numerical problem]
-Answer: [numeric value with unit]
+Q1. Solve: [Numerical problem with specific values]
+Answer: 
+Step 1: [Calculation step]
+Step 2: [Calculation step]
+Step 3: [Calculation step]
+Final Answer: [Numerical result with units if applicable]
 
-Q2. [Numerical problem]
-Answer: [numeric value with unit]
+Q2. Calculate: [Problem requiring numerical computation]
+Answer:
+Step 1: [Calculation step]
+Step 2: [Calculation step]
+Final Answer: [Numerical result]
 
-# CODE ADDED: Important guidelines for numerical problem generation
+EXAMPLES OF GOOD NUMERICAL QUESTIONS:
+- Solve: 3x + 5 = 20
+- Calculate the area of a rectangle with length 12 cm and width 8 cm
+- Find the value of: (25 × 4) + (18 ÷ 3)
+- A train travels 120 km in 2 hours. What is its speed?
+
 IMPORTANT: 
-- Keep answers short (just the number and unit)
-- No step-by-step explanation needed
-- Focus on calculation-based questions"""
+- EVERY question must have NUMBERS and require CALCULATIONS
+- Show step-by-step working
+- Do NOT ask theoretical questions like "What is an equation?"
+- Do NOT create MCQs
+- Focus on SOLVING and CALCULATING"""
             else:  # Science
                 format_instruction = """Generate ONLY NUMERICAL PROBLEMS for Science in this EXACT format:
 
@@ -502,7 +468,7 @@ Generate the {num_questions} {subject} questions with answers now:"""
                 }
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.5,  # Lower temperature for more consistent formatting
+            temperature=0.5,
             max_tokens=2500,
             top_p=0.9,
             stream=False
