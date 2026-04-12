@@ -36,18 +36,70 @@ def read_pdfs(folder_path="data"):
     print(f"✅ Loaded {pdf_count} PDFs ({len(all_text)} characters)")
     return all_text
 
-# Load ALL PDFs once when app starts (SIMPLE AND WORKS!)
-print("=" * 60)
-print("🚀 LOADING NCERT TEXTBOOKS...")
-print("=" * 60)
-NCERT_TEXT = read_pdfs("data")
+# CODE ADDED: New function to load PDFs only for specific subject and class
+def load_pdfs_for_class(subject, class_num):
+    """Load PDFs only for the selected subject and class.
+    
+    Expected folder structure:
+        data/Mathematics/8/   (for Maths Class 8)
+        data/Science/8/       (for Science Class 8)
+    
+    Returns: combined text from all PDFs in that folder.
+    """
+    # CODE ADDED: Normalize subject name to folder name
+    if subject.lower() in ["mathematics", "math", "maths"]:
+        folder_name = "Mathematics"
+    elif subject.lower() == "science":
+        folder_name = "Science"
+    else:
+        folder_name = subject  # fallback
+    
+    # CODE ADDED: Build folder path for this subject and class
+    folder_path = f"data/{folder_name}/{class_num}"
+    
+    # CODE ADDED: Check if folder exists, return empty if not found
+    if not os.path.exists(folder_path):
+        print(f"❌ Folder not found: {folder_path}")
+        return ""
+    
+    all_text = ""
+    pdf_count = 0
+    # CODE ADDED: Walk through folder to find all PDF files
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith(".pdf"):
+                pdf_count += 1
+                filepath = os.path.join(root, file)
+                try:
+                    reader = PdfReader(filepath)
+                    # CODE ADDED: Extract text from all pages
+                    for page in reader.pages:
+                        try:
+                            text = page.extract_text()
+                            if text:
+                                all_text += text + "\n"
+                        except:
+                            pass
+                except Exception as e:
+                    print(f"⚠️ Error reading {file}: {e}")
+    
+    # CODE ADDED: Print summary of loaded content
+    print(f"📚 Loaded {pdf_count} PDFs ({len(all_text)} chars) for {subject} Class {class_num}")
+    return all_text
 
-if len(NCERT_TEXT) < 1000:
-    print("⚠️  WARNING: Very little content loaded!")
-    print("⚠️  Make sure PDF files are in the 'data' folder")
-else:
-    print("✅ PDFs loaded successfully!")
-print("=" * 60 + "\n")
+# CODE REMOVED: Global loading - Now using per-request loading
+# Commented out: NCERT_TEXT loading moved to generate_questions function
+# This allows faster startup and better error handling per request
+# print("=" * 60)
+# print("🚀 LOADING NCERT TEXTBOOKS...")
+# print("=" * 60)
+# NCERT_TEXT = read_pdfs("data")
+# if len(NCERT_TEXT) < 1000:
+#     print("⚠️  WARNING: Very little content loaded!")
+#     print("⚠️  Make sure PDF files are in the 'data' folder")
+# else:
+#     print("✅ PDFs loaded successfully!")
+# print("=" * 60 + "\n")
 
 def find_relevant_context(subject, chapter, full_text, max_chars=5000):
     """Find relevant sections from the text based on chapter/subject
@@ -271,18 +323,17 @@ Add GROQ_API_KEY in Environment Variables section"""
         # Initialize Groq client
         client = Groq(api_key=api_key)
         
-        # Check if we have PDF content
-        if len(NCERT_TEXT) < 100:
-            return """❌ ERROR: No NCERT textbook content loaded!
-
-Please make sure:
-1. PDF files are in the 'data' folder
-2. PDFs are valid and readable
-3. Restart the app after adding PDFs"""
+        # CODE ADDED: Load PDFs only for this specific subject and class (per-request loading)
+        print(f"📚 Loading PDFs for {subject} Class {class_num}...")
+        pdf_text = load_pdfs_for_class(subject, class_num)
         
-        # Get relevant context from PDFs with STRICT subject filtering
+        # CODE ADDED: Check if PDFs were found, return error if not
+        if not pdf_text:
+            return f"❌ No PDFs found for {subject} Class {class_num}. Please check folder: data/{subject}/{class_num}/"
+        
+        # CODE ADDED: Now use loaded pdf_text instead of global NCERT_TEXT
         print(f"📚 Searching for relevant {subject} content about '{chapter}'...")
-        relevant_context = find_relevant_context(subject, chapter, NCERT_TEXT, max_chars=5000)
+        relevant_context = find_relevant_context(subject, chapter, pdf_text, max_chars=5000)
         
         # Build STRICT system message and prompt based on question type
         if question_type == "MCQ":
