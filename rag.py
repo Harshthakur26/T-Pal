@@ -25,10 +25,44 @@ def read_pdfs(folder_path="data"):
     print(f"Loaded PDF text: {len(all_text)} characters from {folder_path}")
     return all_text
 
+# CODE ADDED: New function to read PDFs for specific subject and class
+def read_pdfs_for_class(subject, class_num):
+    """Read PDFs only for specific subject and class to avoid mixing content"""
+    # CODE ADDED: Build the folder path based on subject and class number
+    folder_path = f"data/{subject}/{class_num}"
+    all_text = ""
+    
+    # CODE ADDED: Check if the folder exists before trying to read PDFs
+    if not os.path.exists(folder_path):
+        print(f"⚠️ Folder not found: {folder_path}")
+        return all_text
+    
+    # CODE ADDED: Walk through the folder to find all PDF files
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith(".pdf"):
+                filepath = os.path.join(root, file)
+                try:
+                    reader = PdfReader(filepath)
+                    # CODE ADDED: Extract text from all pages in the PDF
+                    for page in reader.pages:
+                        try:
+                            text = page.extract_text()
+                            if text:
+                                all_text += text + "\n"
+                        except Exception as e:
+                            print(f"⚠️ Error reading page from {file}: {e}")
+                except Exception as e:
+                    print(f"⚠️ Error reading file {file}: {e}")
+    
+    # CODE ADDED: Log the amount of content loaded for this subject and class
+    print(f"Loaded {len(all_text)} characters for {subject} Class {class_num}")
+    return all_text
+
 # Load PDFs once when app starts
-print("Reading PDFs...")
-NCERT_TEXT = read_pdfs("data")
-print("PDFs loaded successfully!")
+# print("Reading PDFs...")
+# NCERT_TEXT = read_pdfs("data")
+# print("PDFs loaded successfully!")
 
 def find_relevant_context(subject, chapter, full_text, max_chars=5000):
     """Find relevant sections from the text based on chapter/subject
@@ -259,9 +293,19 @@ Add GROQ_API_KEY in Environment Variables section"""
         # Initialize Groq client
         client = Groq(api_key=api_key)
         
-        # Get relevant context from PDFs with STRICT subject filtering
+        # CODE ADDED: Load PDFs only for this specific subject and class
+        print(f"📚 Loading PDFs for {subject} Class {class_num}...")
+        pdf_text = read_pdfs_for_class(subject, class_num)
+        
+        # CODE ADDED: Fallback mechanism if specific folder not found
+        if not pdf_text:
+            print(f"⚠️ No PDFs found for {subject} Class {class_num}, trying alternative approach")
+            # Try loading from all data if specific class folder doesn't exist
+            pdf_text = read_pdfs("data")
+        
+        # CODE ADDED: Now use the loaded pdf_text instead of global NCERT_TEXT
         print(f"📚 Searching for relevant {subject} content about '{chapter}'...")
-        relevant_context = find_relevant_context(subject, chapter, NCERT_TEXT, max_chars=5000)
+        relevant_context = find_relevant_context(subject, chapter, pdf_text, max_chars=5000)
         
         # Build STRICT system message and prompt based on question type
         if question_type == "MCQ":
