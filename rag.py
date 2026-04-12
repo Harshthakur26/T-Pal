@@ -31,10 +31,31 @@ NCERT_TEXT = read_pdfs("data")
 print("PDFs loaded successfully!")
 
 def find_relevant_context(subject, chapter, full_text, max_chars=5000):
-    """Find relevant sections from the text based on chapter/subject"""
+    """Find relevant sections from the text based on chapter/subject
+    
+    FIX: Added strict subject filtering to prevent cross-contamination
+    """
     # Simple keyword-based search for relevant content
     search_terms = chapter.lower().split()
     subject_terms = subject.lower().split()
+    
+    # CRITICAL FIX: Add subject-specific exclusion terms
+    # Prevent Math content from appearing in Science and vice versa
+    exclusion_terms = []
+    if subject.lower() == "science":
+        # Exclude math-specific terms when searching for Science
+        exclusion_terms = [
+            "equation", "solve for x", "linear equation", "quadratic",
+            "polynomial", "algebra", "simplify", "calculate the value",
+            "factorisation", "factorise", "algebraic expression"
+        ]
+    elif subject.lower() == "mathematics" or subject.lower() == "math":
+        # Exclude pure science terms when searching for Math
+        exclusion_terms = [
+            "photosynthesis", "respiration", "cell", "tissue", "organism",
+            "chemical reaction", "acid", "base", "ph", "reproduction",
+            "microorganism", "crop", "synthetic fibres", "combustion"
+        ]
     
     # Split text into chunks (roughly by paragraphs/sections)
     chunks = full_text.split('\n\n')
@@ -46,6 +67,18 @@ def find_relevant_context(subject, chapter, full_text, max_chars=5000):
             continue
         
         chunk_lower = chunk.lower()
+        
+        # CRITICAL FIX: Check for exclusion terms first
+        has_exclusion = False
+        for exc_term in exclusion_terms:
+            if exc_term in chunk_lower:
+                has_exclusion = True
+                break
+        
+        # Skip chunks with exclusion terms
+        if has_exclusion:
+            continue
+        
         score = 0
         
         # Higher score for chunks containing search terms
@@ -53,6 +86,7 @@ def find_relevant_context(subject, chapter, full_text, max_chars=5000):
             if term in chunk_lower:
                 score += 10
         
+        # Bonus for subject terms (but not as high)
         for term in subject_terms:
             if term in chunk_lower:
                 score += 5
@@ -98,59 +132,107 @@ def validate_question_type(generated_text, expected_type):
             if line.startswith('Q') or line.startswith('**Q'):
                 in_mcq = True
                 current_question = [line]
-            elif in_mcq and any(opt in line for opt in ['A)', 'B)', 'C)', 'D)', 'Answer:']):
-                current_question.append(line)
-                # If we found Answer:, add this question
-                if 'Answer:' in line:
-                    filtered_lines.extend(current_question)
-                    filtered_lines.append('')
-                    in_mcq = False
             elif in_mcq:
                 current_question.append(line)
+                
+                # Check if we have a complete MCQ
+                if line.startswith('Answer:'):
+                    # Verify it has options
+                    has_options = any('A)' in l or 'B)' in l or 'C)' in l or 'D)' in l 
+                                    for l in current_question)
+                    if has_options:
+                        filtered_lines.extend(current_question)
+                        filtered_lines.append('')  # blank line
+                    in_mcq = False
+                    current_question = []
+        
+        result = '\n'.join(filtered_lines)
+        if not result.strip():
+            # If filtering removed everything, return original
+            # (better to have mixed questions than nothing)
+            return generated_text
+        return result
     
     elif expected_type == "Short Answer":
-        # Keep only questions with short answers (no options A/B/C/D)
-        for i, line in enumerate(lines):
-            line = line.strip()
-            if not line:
-                filtered_lines.append('')
-                continue
-            
-            # Skip lines with MCQ options
-            if any(opt in line for opt in ['A)', 'B)', 'C)', 'D)']) and not line.startswith('Answer:'):
-                continue
-            
-            filtered_lines.append(line)
-    
-    elif expected_type == "Long Answer":
-        # Keep questions with detailed answers (no MCQ options)
+        # Filter out MCQs (questions with A/B/C/D options)
+        current_question = []
+        is_mcq = False
+        
         for line in lines:
             line = line.strip()
             if not line:
-                filtered_lines.append('')
                 continue
             
-            # Skip lines with MCQ options
-            if any(opt in line for opt in ['A)', 'B)', 'C)', 'D)']) and not line.startswith('Answer:'):
+            if line.startswith('Q'):
+                if current_question and not is_mcq:
+                    filtered_lines.extend(current_question)
+                    filtered_lines.append('')
+                current_question = [line]
+                is_mcq = False
+            else:
+                current_question.append(line)
+                # Check if it's an MCQ
+                if any(line.startswith(opt) for opt in ['A)', 'B)', 'C)', 'D)']):
+                    is_mcq = True
+        
+        # Add last question if it's not MCQ
+        if current_question and not is_mcq:
+            filtered_lines.extend(current_question)
+        
+        result = '\n'.join(filtered_lines)
+        if not result.strip():
+            return generated_text
+        return result
+    
+    elif expected_type == "Long Answer":
+        # Similar to Short Answer but keep longer responses
+        return validate_question_type(generated_text, "Short Answer")
+    
+    elif expected_type == "Numerical":
+        # NEW: Filter to keep only numerical/calculation problems
+        # Look for mathematical symbols, equations, calculations
+        current_question = []
+        has_numbers = False
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
                 continue
             
-            filtered_lines.append(line)
+            if line.startswith('Q'):
+                if current_question and has_numbers:
+                    filtered_lines.extend(current_question)
+                    filtered_lines.append('')
+                current_question = [line]
+                has_numbers = False
+            else:
+                current_question.append(line)
+                # Check for numerical indicators
+                if any(char in line for char in ['=', '+', '-', '×', '÷', '²', '³', '%']):
+                    has_numbers = True
+                # Check for numbers
+                if any(char.isdigit() for char in line):
+                    has_numbers = True
+        
+        # Add last question if it has numbers
+        if current_question and has_numbers:
+            filtered_lines.extend(current_question)
+        
+        result = '\n'.join(filtered_lines)
+        if not result.strip():
+            # For numerical, if filtering removed everything, 
+            # return original (teacher feedback: need numericals!)
+            return generated_text
+        return result
     
-    else:  # Mixed - keep everything
-        return generated_text
-    
-    result = '\n'.join(filtered_lines)
-    
-    # If filtering removed too much, return original with warning
-    if len(result.strip()) < 100:
-        print(f"⚠️ Filtering removed too much content. Returning original.")
-        return generated_text
-    
-    print(f"✅ Filtered to {expected_type} format")
-    return result
+    return generated_text
 
 def generate_questions(subject, class_num, chapter, num_questions, difficulty, question_type="Mixed"):
-    """Generate questions using Groq API with strict type enforcement"""
+    """Generate questions using Groq API with strict type enforcement
+    
+    NEW: Added "Numerical" question type for math problems
+    FIX: Better subject filtering to prevent cross-contamination
+    """
     
     print(f"\n{'='*60}")
     print(f"🎓 Generating {question_type} questions with Groq API...")
@@ -177,8 +259,8 @@ Add GROQ_API_KEY in Environment Variables section"""
         # Initialize Groq client
         client = Groq(api_key=api_key)
         
-        # Get relevant context from PDFs
-        print(f"📚 Searching for relevant content about '{chapter}'...")
+        # Get relevant context from PDFs with STRICT subject filtering
+        print(f"📚 Searching for relevant {subject} content about '{chapter}'...")
         relevant_context = find_relevant_context(subject, chapter, NCERT_TEXT, max_chars=5000)
         
         # Build STRICT system message and prompt based on question type
@@ -248,6 +330,54 @@ Answer: [Detailed answer with 3-5 sentences or clear steps]
 
 IMPORTANT: Do NOT include any multiple choice options (A/B/C/D). All questions must require detailed answers."""
         
+        elif question_type == "Numerical":
+            # NEW: Numerical problem type for Math (and Science calculations)
+            system_message = """You are an expert NCERT question paper creator specializing in NUMERICAL PROBLEMS.
+
+CRITICAL RULES:
+1. EVERY question MUST involve calculations, numbers, or mathematical operations
+2. Questions should require solving, computing, or calculating numerical values
+3. Include step-by-step solutions showing all calculations
+4. Use proper mathematical notation (=, +, -, ×, ÷, etc.)
+5. DO NOT create theoretical or definition-based questions
+6. DO NOT create MCQs with options A/B/C/D
+7. Focus on: Solve, Calculate, Find, Compute, Determine"""
+            
+            if subject.lower() in ["mathematics", "math", "maths"]:
+                # CODE ADDED: Simplified format for generating numerical problems with concise answers
+                format_instruction = """Generate ONLY NUMERICAL PROBLEMS with concise answers:
+
+Q1. [Numerical problem]
+Answer: [numeric value with unit]
+
+Q2. [Numerical problem]
+Answer: [numeric value with unit]
+
+# CODE ADDED: Important guidelines for numerical problem generation
+IMPORTANT: 
+- Keep answers short (just the number and unit)
+- No step-by-step explanation needed
+- Focus on calculation-based questions"""
+            else:  # Science
+                format_instruction = """Generate ONLY NUMERICAL PROBLEMS for Science in this EXACT format:
+
+Q1. Calculate: [Numerical problem related to Science concept]
+Answer:
+Step 1: [Calculation or explanation]
+Step 2: [Calculation]
+Final Answer: [Numerical result with units]
+
+EXAMPLES FOR SCIENCE:
+- Calculate the speed if distance is 100m and time is 5s
+- If a force of 10N is applied over an area of 2m², calculate the pressure
+- Calculate the percentage of oxygen in air if it is 21 parts per 100
+
+IMPORTANT:
+- Include numbers and calculations
+- Relate to Science concepts (force, pressure, speed, etc.)
+- Show working/steps
+- Include units in answers"""
+        
         else:  # Mixed
             system_message = "You are an expert NCERT question paper creator. You create a mix of MCQs, short answer, and long answer questions."
             
@@ -258,30 +388,36 @@ IMPORTANT: Do NOT include any multiple choice options (A/B/C/D). All questions m
 
 Format examples shown above."""
         
-        # Create main prompt
+        # Create main prompt with STRICT subject reinforcement
         prompt = f"""You are creating a Class {class_num} {subject} question paper on "{chapter}".
 
-Use this NCERT content as reference:
+CRITICAL: This is for {subject} ONLY. Do NOT include questions from other subjects.
+
+Use this NCERT {subject} content as reference:
 
 {relevant_context}
 
 TASK:
-Generate EXACTLY {num_questions} questions at {difficulty} difficulty level.
+Generate EXACTLY {num_questions} {subject} questions at {difficulty} difficulty level.
 
 {format_instruction}
 
 QUALITY REQUIREMENTS:
-1. Questions must be based on the NCERT content provided above
-2. Difficulty level: {difficulty} - adjust complexity accordingly
-3. Questions should test understanding, not just memory
-4. Use proper terminology from NCERT textbooks
-5. Make questions clear and unambiguous
-6. Ensure answers are accurate based on NCERT content
+1. Questions must be based STRICTLY on {subject} content (NOT other subjects!)
+2. Questions must be from the chapter "{chapter}" in Class {class_num} {subject}
+3. Difficulty level: {difficulty} - adjust complexity accordingly
+4. Questions should test understanding, not just memory
+5. Use proper terminology from NCERT {subject} textbooks
+6. Make questions clear and unambiguous
+7. Ensure answers are accurate based on NCERT content
 
-Generate the {num_questions} questions with answers now:"""
+IMPORTANT: Only create {subject} questions. Do not mix with other subjects!
+
+Generate the {num_questions} {subject} questions with answers now:"""
 
         print(f"🤖 Sending request to Groq API...")
         print(f"   Model: llama-3.3-70b-versatile")
+        print(f"   Subject: {subject}")
         print(f"   Type: {question_type}")
         print(f"   Prompt length: {len(prompt)} characters")
         
@@ -310,7 +446,7 @@ Generate the {num_questions} questions with answers now:"""
         print(f"✅ Generation complete! ({len(generated_text)} characters)")
         
         # Post-process to validate question type (extra safety)
-        if question_type in ["MCQ", "Short Answer", "Long Answer"]:
+        if question_type in ["MCQ", "Short Answer", "Long Answer", "Numerical"]:
             generated_text = validate_question_type(generated_text, question_type)
         
         print(f"{'='*60}\n")

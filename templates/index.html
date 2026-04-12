@@ -401,11 +401,12 @@
                 
                 <div class="form-group full-width">
                     <label><span class="icon">❓</span> Question Type</label>
-                    <select name="question_type">
+                    <select name="question_type" id="questionTypeSelect">
                         <option value="Mixed">Mixed (MCQ + Short + Long)</option>
                         <option value="MCQ">Multiple Choice Questions (MCQ)</option>
                         <option value="Short Answer">Short Answer Questions</option>
                         <option value="Long Answer">Long Answer Questions</option>
+                        <option value="Numerical">Numerical Problems (Calculations)</option>
                     </select>
                 </div>
             </div>
@@ -659,6 +660,36 @@ form.addEventListener('submit', function(e) {
 
 // Initialize chapters on page load
 updateChapters();
+
+// CODE ADDED: Show/hide Numerical option based on subject selection
+// Get the Question Type select element and find the Numerical option
+const questionTypeSelect = document.getElementById('questionTypeSelect');
+const numericalOption = questionTypeSelect.querySelector('option[value="Numerical"]');
+
+// CODE ADDED: Function to toggle Numerical option visibility
+// Numerical problems should only be available for Mathematics subject
+function toggleNumericalOption() {
+    if (subjectSelect.value === 'Mathematics') {
+        // CODE ADDED: Show the Numerical option when Mathematics is selected
+        numericalOption.style.display = 'block';
+        // CODE ADDED: If currently hidden and not selected, fine. If hidden and selected, switch to Mixed.
+        if (questionTypeSelect.value === 'Numerical' && numericalOption.style.display !== 'block') {
+            questionTypeSelect.value = 'Mixed';
+        }
+    } else {
+        // CODE ADDED: Hide the Numerical option for other subjects (Science, etc.)
+        numericalOption.style.display = 'none';
+        // CODE ADDED: If Numerical was selected, automatically switch to Mixed when subject changes
+        if (questionTypeSelect.value === 'Numerical') {
+            questionTypeSelect.value = 'Mixed';
+        }
+    }
+}
+
+// CODE ADDED: Listen for subject change events and update Numerical option visibility
+subjectSelect.addEventListener('change', toggleNumericalOption);
+// CODE ADDED: Also call on page load to set initial state correctly
+toggleNumericalOption();
 </script>
 
 </body>
