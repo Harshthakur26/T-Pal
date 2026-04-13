@@ -1,4 +1,5 @@
 import os
+import gc  # For memory management - clear memory after loading PDFs
 from groq import Groq
 from pypdf import PdfReader
 
@@ -37,14 +38,19 @@ def read_pdfs(folder_path="data"):
     return all_text
 
 # CODE ADDED: New function to load PDFs only for specific subject and class
-def load_pdfs_for_class(subject, class_num):
-    """Load PDFs only for the selected subject and class.
+def load_pdfs_for_class(subject, class_num, max_chars=150000):
+    """Load PDFs only for the selected subject and class - WITH MEMORY LIMIT
     
     Expected folder structure:
         data/Mathematics/8/   (for Maths Class 8)
         data/Science/8/       (for Science Class 8)
     
-    Returns: combined text from all PDFs in that folder.
+    Args:
+        subject: Subject name (Mathematics, Science, etc.)
+        class_num: Class number (6, 7, 8, 9)
+        max_chars: Maximum characters to load (default 150K to save memory)
+    
+    Returns: combined text from PDFs (up to max_chars)
     """
     # CODE ADDED: Normalize subject name to folder name
     if subject.lower() in ["mathematics", "math", "maths"]:
@@ -60,31 +66,55 @@ def load_pdfs_for_class(subject, class_num):
     # CODE ADDED: Check if folder exists, return empty if not found
     if not os.path.exists(folder_path):
         print(f"❌ Folder not found: {folder_path}")
-        return ""
+        # Try alternate: all PDFs in data/ root (flat structure)
+        folder_path = "data"
+        print(f"   Trying fallback: {folder_path}")
     
     all_text = ""
     pdf_count = 0
+    
     # CODE ADDED: Walk through folder to find all PDF files
     for root, dirs, files in os.walk(folder_path):
         for file in files:
             if file.endswith(".pdf"):
                 pdf_count += 1
                 filepath = os.path.join(root, file)
+                print(f"   📄 Reading: {file}")
                 try:
                     reader = PdfReader(filepath)
-                    # CODE ADDED: Extract text from all pages
+                    # CODE ADDED: Extract text page by page, STOP EARLY if enough content
                     for page in reader.pages:
                         try:
                             text = page.extract_text()
                             if text:
                                 all_text += text + "\n"
+                                # CRITICAL: Stop if we've collected enough characters
+                                if len(all_text) > max_chars:
+                                    print(f"   ⚡ Reached {max_chars:,} chars limit, stopping...")
+                                    break
                         except:
-                            pass
+                            pass  # Skip problematic pages
+                    
+                    # CRITICAL: Force garbage collection after each PDF to free memory
+                    del reader
+                    gc.collect()
+                    
                 except Exception as e:
-                    print(f"⚠️ Error reading {file}: {e}")
+                    print(f"   ⚠️ Error reading {file}: {e}")
+                
+                # Check again after each PDF - stop if enough
+                if len(all_text) > max_chars:
+                    print(f"   ✅ Loaded enough content ({len(all_text):,} chars), stopping PDF loading")
+                    break
+        
+        # Break outer loop too if enough content
+        if len(all_text) > max_chars:
+            break
     
     # CODE ADDED: Print summary of loaded content
-    print(f"📚 Loaded {pdf_count} PDFs ({len(all_text)} chars) for {subject} Class {class_num}")
+    print(f"📚 Loaded {pdf_count} PDFs ({len(all_text):,} chars) for {subject} Class {class_num}")
+    print(f"   Memory: Limited to {max_chars:,} chars to prevent crashes")
+    
     return all_text
 
 # CODE REMOVED: Global loading - Now using per-request loading
@@ -334,6 +364,11 @@ Add GROQ_API_KEY in Environment Variables section"""
         # CODE ADDED: Now use loaded pdf_text instead of global NCERT_TEXT
         print(f"📚 Searching for relevant {subject} content about '{chapter}'...")
         relevant_context = find_relevant_context(subject, chapter, pdf_text, max_chars=5000)
+        
+        # CRITICAL: Free memory - we don't need full PDF text anymore, only relevant_context
+        del pdf_text
+        gc.collect()
+        print(f"   ⚡ Memory cleanup: Freed PDF text, kept only relevant context")
         
         # Build STRICT system message and prompt based on question type
         if question_type == "MCQ":
