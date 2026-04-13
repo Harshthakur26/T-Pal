@@ -37,9 +37,12 @@ def read_pdfs(folder_path="data"):
     print(f"✅ Loaded {pdf_count} PDFs ({len(all_text)} characters)")
     return all_text
 
-# CODE ADDED: New function to load PDFs only for specific subject and class
-def load_pdfs_for_class(subject, class_num, max_chars=150000):
-    """Load PDFs only for the selected subject and class - WITH MEMORY LIMIT
+# ========== UPDATED: Load PDFs matching specific chapter (SMARTER VERSION) ==========
+def load_pdfs_for_class(subject, class_num, chapter):
+    """Load ONLY the PDF that matches the chapter name (or first PDF if not found)
+    
+    This is a SMARTER version that finds PDFs specific to the chapter instead of loading all PDFs.
+    This saves memory and provides more relevant content for questions.
     
     Expected folder structure:
         data/Mathematics/8/   (for Maths Class 8)
@@ -48,73 +51,86 @@ def load_pdfs_for_class(subject, class_num, max_chars=150000):
     Args:
         subject: Subject name (Mathematics, Science, etc.)
         class_num: Class number (6, 7, 8, 9)
-        max_chars: Maximum characters to load (default 150K to save memory)
+        chapter: Chapter name to search for in PDF filenames
     
-    Returns: combined text from PDFs (up to max_chars)
+    Returns: text from the matching PDF (or first PDF if no match found)
     """
-    # CODE ADDED: Normalize subject name to folder name
+    
+    # ===== SECTION 1: Normalize subject name to folder name =====
+    # This helps convert user input (math/maths) to actual folder names (Mathematics)
     if subject.lower() in ["mathematics", "math", "maths"]:
         folder_name = "Mathematics"
     elif subject.lower() == "science":
         folder_name = "Science"
     else:
-        folder_name = subject  # fallback
+        folder_name = subject  # fallback to whatever user provided
     
-    # CODE ADDED: Build folder path for this subject and class
+    # ===== SECTION 2: Build and check folder path =====
+    # Construct the full path where PDFs should be located
     folder_path = f"data/{folder_name}/{class_num}"
-    
-    # CODE ADDED: Check if folder exists, return empty if not found
     if not os.path.exists(folder_path):
         print(f"❌ Folder not found: {folder_path}")
-        # Try alternate: all PDFs in data/ root (flat structure)
-        folder_path = "data"
-        print(f"   Trying fallback: {folder_path}")
+        return ""
     
-    all_text = ""
-    pdf_count = 0
-    
-    # CODE ADDED: Walk through folder to find all PDF files
+    # ===== SECTION 3: Get list of all PDF files in the folder =====
+    # Walk through directory structure and collect all PDF files
+    pdf_files = []
     for root, dirs, files in os.walk(folder_path):
         for file in files:
             if file.endswith(".pdf"):
-                pdf_count += 1
-                filepath = os.path.join(root, file)
-                print(f"   📄 Reading: {file}")
-                try:
-                    reader = PdfReader(filepath)
-                    # CODE ADDED: Extract text page by page, STOP EARLY if enough content
-                    for page in reader.pages:
-                        try:
-                            text = page.extract_text()
-                            if text:
-                                all_text += text + "\n"
-                                # CRITICAL: Stop if we've collected enough characters
-                                if len(all_text) > max_chars:
-                                    print(f"   ⚡ Reached {max_chars:,} chars limit, stopping...")
-                                    break
-                        except:
-                            pass  # Skip problematic pages
-                    
-                    # CRITICAL: Force garbage collection after each PDF to free memory
-                    del reader
-                    gc.collect()
-                    
-                except Exception as e:
-                    print(f"   ⚠️ Error reading {file}: {e}")
-                
-                # Check again after each PDF - stop if enough
-                if len(all_text) > max_chars:
-                    print(f"   ✅ Loaded enough content ({len(all_text):,} chars), stopping PDF loading")
-                    break
-        
-        # Break outer loop too if enough content
-        if len(all_text) > max_chars:
+                pdf_files.append(os.path.join(root, file))
+    
+    # ===== SECTION 4: Check if any PDFs were found =====
+    # Return empty string if no PDFs exist
+    if not pdf_files:
+        return ""
+    
+    # ===== SECTION 5: Try to find a PDF matching the chapter name =====
+    # Search through filenames to find one that matches the chapter
+    # This makes questions more relevant to the specific chapter
+    chapter_lower = chapter.lower()
+    selected_pdf = None
+    for pdf_path in pdf_files:
+        pdf_name = os.path.basename(pdf_path).lower()
+        # Check if ANY word from chapter name appears in the filename
+        # Example: Looking for "Quadratic Equations" will match "Chapter_2_Quadratic_Equations.pdf"
+        if any(word in pdf_name for word in chapter_lower.split()):
+            selected_pdf = pdf_path
             break
     
-    # CODE ADDED: Print summary of loaded content
-    print(f"📚 Loaded {pdf_count} PDFs ({len(all_text):,} chars) for {subject} Class {class_num}")
-    print(f"   Memory: Limited to {max_chars:,} chars to prevent crashes")
+    # ===== SECTION 6: Use first PDF if no chapter match found =====
+    # Fallback behavior when chapter name doesn't match any filename
+    # User can provide raw PDF files or name them specifically for better matching
+    if not selected_pdf:
+        print(f"⚠️ No PDF matching '{chapter}', using first PDF: {pdf_files[0]}")
+        selected_pdf = pdf_files[0]
     
+    # ===== SECTION 7: Load ONLY the selected single PDF =====
+    # Extract text from all pages of the selected PDF
+    all_text = ""
+    try:
+        reader = PdfReader(selected_pdf)
+        # Iterate through each page and extract text
+        for page in reader.pages:
+            try:
+                text = page.extract_text()
+                if text:
+                    all_text += text + "\n"
+            except:
+                pass  # Skip pages that fail to extract
+        
+        # ===== GARBAGE COLLECTION: Free memory after reading PDF =====
+        # This is important because PDFs can be large in memory
+        del reader
+        import gc
+        gc.collect()
+        
+    except Exception as e:
+        print(f"⚠️ Error reading {selected_pdf}: {e}")
+        return ""
+    
+    # ===== FINAL: Print summary and return =====
+    print(f"📚 Loaded 1 PDF ({len(all_text)} chars) for {subject} Class {class_num} chapter '{chapter}'")
     return all_text
 
 # CODE REMOVED: Global loading - Now using per-request loading
@@ -353,9 +369,10 @@ Add GROQ_API_KEY in Environment Variables section"""
         # Initialize Groq client
         client = Groq(api_key=api_key)
         
-        # CODE ADDED: Load PDFs only for this specific subject and class (per-request loading)
-        print(f"📚 Loading PDFs for {subject} Class {class_num}...")
-        pdf_text = load_pdfs_for_class(subject, class_num)
+        # ===== UPDATED: Load PDFs only for this specific subject, class AND chapter (per-request loading) =====
+        # Now passes chapter parameter to find PDFs matching the specific chapter for better relevance
+        print(f"📚 Loading PDFs for {subject} Class {class_num}, Chapter: {chapter}...")
+        pdf_text = load_pdfs_for_class(subject, class_num, chapter)
         
         # CODE ADDED: Check if PDFs were found, return error if not
         if not pdf_text:
