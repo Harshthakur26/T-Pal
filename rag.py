@@ -101,14 +101,15 @@ def load_pdfs_for_class(subject, class_num, chapter):
             reader = PdfReader(pdf_path)
             # Read first 3 pages only (fast scan for chapter heading)
             sample_text = ""
-            for page in reader.pages[:3]:
+            for page in reader.pages[:1]:
                 text = page.extract_text()
                 if text:
                     sample_text += text.lower()
             del reader
+            gc.collect()
 
             # Score by how many meaningful chapter words appear in content
-            score = sum(1 for word in meaningful_words if word in sample_text)
+            score = sum(sample_text.count(word) for word in meaningful_words)
             print(f"   🔍 {os.path.basename(pdf_path)}: score={score}")
             if score > best_score:
                 best_score = score
@@ -402,6 +403,8 @@ Add GROQ_API_KEY in Environment Variables section"""
             print(f"⚠️ No PDF match — AI will use its own NCERT knowledge for this chapter")
         else:
             relevant_context = find_relevant_context(subject, chapter, pdf_text, max_chars=5000)
+            del pdf_text  # Free memory — don't keep full PDF in RAM
+            gc.collect()
         
         # CRITICAL: Free memory - we don't need full PDF text anymore, only relevant_context
         del pdf_text
