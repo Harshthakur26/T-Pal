@@ -385,8 +385,6 @@ Add GROQ_API_KEY in Environment Variables section"""
             gc.collect()
         
         # CRITICAL: Free memory - we don't need full PDF text anymore, only relevant_context
-        del pdf_text
-        gc.collect()
         print(f"   ⚡ Memory cleanup: Freed PDF text, kept only relevant context")
         
         # Build STRICT system message and prompt based on question type
