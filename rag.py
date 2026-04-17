@@ -88,47 +88,26 @@ def load_pdfs_for_class(subject, class_num, chapter):
     # ===== SECTION 5: Try to find a PDF matching the chapter name =====
     # Search through filenames to find one that matches the chapter
     # This makes questions more relevant to the specific chapter
-    # ===== SECTION 5: CONTENT-BASED matching (not filename-based) =====
-    chapter_lower = chapter.lower()
-# Filter out common short words that appear everywhere
-    meaningful_words = [w for w in chapter_lower.split() if len(w) > 3]
+    # ===== SECTION 5: Instant chapter lookup from chapter_map.py =====
+    from chapter_map import CHAPTER_MAP
 
-    best_pdf = None
-    best_score = 0
+    chapter_lower = chapter.lower().strip()
+    subject_map = CHAPTER_MAP.get(subject, {}).get(str(class_num), {})
+    selected_pdf = None
 
-    for pdf_path in pdf_files:
-        try:
-            reader = PdfReader(pdf_path)
-            # Read first 3 pages only (fast scan for chapter heading)
-            sample_text = ""
-            for page in reader.pages[:1]:
-                text = page.extract_text()
-                if text:
-                    sample_text += text.lower()
-            del reader
-            gc.collect()
+    for key, filename in subject_map.items():
+        if key in chapter_lower or chapter_lower in key:
+            selected_pdf = os.path.join(folder_path, filename)
+            print(f"✅ Chapter mapped: {filename}")
+            break
 
-            # Score by how many meaningful chapter words appear in content
-            score = sum(sample_text.count(word) for word in meaningful_words)
-            print(f"   🔍 {os.path.basename(pdf_path)}: score={score}")
-            if score > best_score:
-                best_score = score
-                best_pdf = pdf_path
-        except Exception as e:
-            print(f"   ⚠️ Skipping {pdf_path}: {e}")
-            continue
-
-    # ===== SECTION 6: Only use PDF if we actually found a match =====
-    if best_pdf and best_score > 0:
-        selected_pdf = best_pdf
-        print(f"✅ Best match: {os.path.basename(selected_pdf)} (score={best_score})")
-    else:
-        # No match found → return special marker so generate_questions handles it properly
-        print(f"⚠️ No PDF content matched chapter '{chapter}'. Will generate from AI knowledge.")
-        return "NO_PDF_MATCH"  # ← clear signal, not silent failure
-    
-    # ===== SECTION 7: Load ONLY the selected single PDF =====
-    # Extract text from all pages of the selected PDF
+    # ===== SECTION 6: No match found =====
+    if not selected_pdf:
+        print(f"⚠️ No map entry for '{chapter}'. Returning NO_PDF_MATCH.")
+        return "NO_PDF_MATCH"
+        
+        # ===== SECTION 7: Load ONLY the selected single PDF =====
+        # Extract text from all pages of the selected PDF
     all_text = ""
     try:
         reader = PdfReader(selected_pdf)
