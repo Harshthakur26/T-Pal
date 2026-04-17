@@ -133,7 +133,7 @@ def load_pdfs_for_class(subject, class_num, chapter):
     try:
         reader = PdfReader(selected_pdf)
         # Iterate through each page and extract text
-        for page in reader.pages:
+        for page in reader.pages[:30]:
             try:
                 text = page.extract_text()
                 if text:
