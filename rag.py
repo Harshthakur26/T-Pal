@@ -144,7 +144,6 @@ def load_pdfs_for_class(subject, class_num, chapter):
         # ===== GARBAGE COLLECTION: Free memory after reading PDF =====
         # This is important because PDFs can be large in memory
         del reader
-        import gc
         gc.collect()
         
     except Exception as e:
