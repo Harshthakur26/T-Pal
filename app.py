@@ -41,8 +41,8 @@ app = Flask(__name__)
 RATE_LIMIT_STORAGE = {}
 
 # Rate limit settings
-REQUESTS_PER_HOUR = 5  # Free tier: 10 papers per hour per IP
-REQUESTS_PER_DAY = 20   # Free tier: 30 papers per day per IP
+REQUESTS_PER_HOUR = 4  # Free tier: 4 papers per hour per IP
+REQUESTS_PER_DAY = 15   # Free tier: 15 papers per day per IP
 
 def check_rate_limit(ip_address):
     """Check if IP has exceeded rate limits"""

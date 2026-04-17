@@ -88,22 +88,43 @@ def load_pdfs_for_class(subject, class_num, chapter):
     # ===== SECTION 5: Try to find a PDF matching the chapter name =====
     # Search through filenames to find one that matches the chapter
     # This makes questions more relevant to the specific chapter
+    # ===== SECTION 5: CONTENT-BASED matching (not filename-based) =====
     chapter_lower = chapter.lower()
-    selected_pdf = None
+# Filter out common short words that appear everywhere
+    meaningful_words = [w for w in chapter_lower.split() if len(w) > 3]
+
+    best_pdf = None
+    best_score = 0
+
     for pdf_path in pdf_files:
-        pdf_name = os.path.basename(pdf_path).lower()
-        # Check if ANY word from chapter name appears in the filename
-        # Example: Looking for "Quadratic Equations" will match "Chapter_2_Quadratic_Equations.pdf"
-        if any(word in pdf_name for word in chapter_lower.split()):
-            selected_pdf = pdf_path
-            break
-    
-    # ===== SECTION 6: Use first PDF if no chapter match found =====
-    # Fallback behavior when chapter name doesn't match any filename
-    # User can provide raw PDF files or name them specifically for better matching
-    if not selected_pdf:
-        print(f"⚠️ No PDF matching '{chapter}', using first PDF: {pdf_files[0]}")
-        selected_pdf = pdf_files[0]
+        try:
+            reader = PdfReader(pdf_path)
+            # Read first 3 pages only (fast scan for chapter heading)
+            sample_text = ""
+            for page in reader.pages[:3]:
+                text = page.extract_text()
+                if text:
+                    sample_text += text.lower()
+            del reader
+
+            # Score by how many meaningful chapter words appear in content
+            score = sum(1 for word in meaningful_words if word in sample_text)
+            print(f"   🔍 {os.path.basename(pdf_path)}: score={score}")
+            if score > best_score:
+                best_score = score
+                best_pdf = pdf_path
+        except Exception as e:
+            print(f"   ⚠️ Skipping {pdf_path}: {e}")
+            continue
+
+    # ===== SECTION 6: Only use PDF if we actually found a match =====
+    if best_pdf and best_score > 0:
+        selected_pdf = best_pdf
+        print(f"✅ Best match: {os.path.basename(selected_pdf)} (score={best_score})")
+    else:
+        # No match found → return special marker so generate_questions handles it properly
+        print(f"⚠️ No PDF content matched chapter '{chapter}'. Will generate from AI knowledge.")
+        return "NO_PDF_MATCH"  # ← clear signal, not silent failure
     
     # ===== SECTION 7: Load ONLY the selected single PDF =====
     # Extract text from all pages of the selected PDF
@@ -375,12 +396,12 @@ Add GROQ_API_KEY in Environment Variables section"""
         pdf_text = load_pdfs_for_class(subject, class_num, chapter)
         
         # CODE ADDED: Check if PDFs were found, return error if not
-        if not pdf_text:
-            return f"❌ No PDFs found for {subject} Class {class_num}. Please check folder: data/{subject}/{class_num}/"
-        
-        # CODE ADDED: Now use loaded pdf_text instead of global NCERT_TEXT
-        print(f"📚 Searching for relevant {subject} content about '{chapter}'...")
-        relevant_context = find_relevant_context(subject, chapter, pdf_text, max_chars=5000)
+        if not pdf_text or pdf_text == "NO_PDF_MATCH":
+    # Tell AI to use ONLY its NCERT knowledge — no hallucination from wrong PDF
+            relevant_context = f"[No PDF data available. Generate strictly from NCERT Class {class_num} {subject}, Chapter: {chapter}]"
+            print(f"⚠️ No PDF match — AI will use its own NCERT knowledge for this chapter")
+        else:
+            relevant_context = find_relevant_context(subject, chapter, pdf_text, max_chars=5000)
         
         # CRITICAL: Free memory - we don't need full PDF text anymore, only relevant_context
         del pdf_text
