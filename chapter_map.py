@@ -33,14 +33,14 @@ CHAPTER_MAP = {
             "the invisible living world: beyond our naked eye": "hecu102.pdf",
             "health: the ultimate treasure": "hecu103.pdf",
             "electricity: magnetic and heating effects": "hecu104.pdf",
-            "force": "hecu105.pdf",
+            "exploring forces": "hecu105.pdf",
             "pressure, winds, storms, and cyclones": "hecu106.pdf",
             "particulate nature of matter": "hecu107.pdf",
             "nature of matter: elements, compounds, and mixtures": "hecu108.pdf",
             "the amazing world of solutes, solvents, and solutions": "hecu109.pdf",
             "light: mirrors and lenses": "hecu110.pdf",
             "keeping time with the skies": "hecu111.pdf",
-            "interactions in ecosystems": "hecu112.pdf",
+            "how nature works in harmony": "hecu112.pdf",
             "our home: earth, a unique life sustaining planet": "hecu113.pdf"
         },
         "9": {
