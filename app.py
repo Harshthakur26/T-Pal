@@ -14,17 +14,25 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 
 # User database file
-USERS_FILE = 'users.json'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+USERS_FILE = os.path.join(BASE_DIR, 'users.json')
+print(f"📁 Users file will be saved at: {USERS_FILE}")
 
 def load_users():
     """Load user database from JSON file"""
+    print(f"📁 Looking for users.json at: {USERS_FILE}")
+    print(f"📁 File exists? {os.path.exists(USERS_FILE)}")
     if os.path.exists(USERS_FILE):
         with open(USERS_FILE, 'r') as f:
-            return json.load(f)
+            data = json.load(f)
+            print(f"📁 Loaded {len(data)} users")
+            return data
+    print("📁 No users.json found, creating new one")
     return {}
 
 def save_users(users_data):
     """Save user database to JSON file"""
+    print(f"📁 Saving users to: {USERS_FILE}")
     with open(USERS_FILE, 'w') as f:
         json.dump(users_data, f, indent=2)
 
@@ -102,6 +110,7 @@ def check_user_limit(email):
     user['daily_count'] += 1
     users[email] = user
     save_users(users)
+    print(f"✅ Saved user {email}: hourly={user['hourly_count']}, daily={user['daily_count']}")
     
     return True, f"✅ Used: {user['hourly_count']}/{REQUESTS_PER_HOUR} (hour), {user['daily_count']}/{REQUESTS_PER_DAY} (day)"
 
