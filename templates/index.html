@@ -330,6 +330,12 @@
     </span>
 </div>
 
+{% if session.user_name %}
+<div style="text-align: right; padding: 10px; max-width: 900px; margin: 0 auto 10px; color: #ffffff;">
+    👋 Welcome, {{ session.user_name }} | 
+    <a href="/logout" style="color: #f6e05e; text-decoration: none; font-weight: 600;">Logout</a>
+</div>
+
 <div class="container">
     <div class="card">
         <h2><span class="emoji-icon">⚡</span> Generate Question Paper</h2>

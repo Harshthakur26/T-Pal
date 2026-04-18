@@ -30,6 +30,9 @@ def save_users(users_data):
 
 # Rate limiting for anonymous users (IP-based)
 ANONYMOUS_LIMIT = {}
+REQUESTS_PER_HOUR = 2  # Free tier: 4 papers per hour per IP
+REQUESTS_PER_DAY = 5   # Free tier: 15 papers per day per IP
+
 
 def check_anonymous_limit(ip_address):
     """Check if anonymous user (no login) has used their 1 free paper"""
@@ -86,13 +89,13 @@ def check_user_limit(email):
         user['daily_reset'] = (now + timedelta(days=1)).isoformat()
     
     # Check limits
-    if user['hourly_count'] >= 2:
+    if user['hourly_count'] >= REQUESTS_PER_HOUR:
         minutes_left = int((hourly_reset - now).total_seconds() / 60)
-        return False, f"⏰ Hourly limit: 2 papers/hour. Try again in {minutes_left} minutes."
+        return False, f"⏰ Hourly limit: {REQUESTS_PER_HOUR} papers/hour. Try again in {minutes_left} minutes."
     
-    if user['daily_count'] >= 5:
+    if user['daily_count'] >= REQUESTS_PER_DAY:
         hours_left = int((daily_reset - now).total_seconds() / 3600)
-        return False, f"⏰ Daily limit: 5 papers/day. Try again in {hours_left} hours."
+        return False, f"⏰ Daily limit: {REQUESTS_PER_DAY} papers/day. Try again in {hours_left} hours."
     
     # Increment counters
     user['hourly_count'] += 1
@@ -100,7 +103,7 @@ def check_user_limit(email):
     users[email] = user
     save_users(users)
     
-    return True, f"✅ Used: {user['hourly_count']}/2 (hour), {user['daily_count']}/5 (day)"
+    return True, f"✅ Used: {user['hourly_count']}/{REQUESTS_PER_HOUR} (hour), {user['daily_count']}/{REQUESTS_PER_DAY} (day)"
 
 @app.route("/")
 def home():
