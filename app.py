@@ -1,3 +1,4 @@
+from supabase import create_client, Client
 from flask import Flask, render_template, request, make_response, session, redirect, url_for
 from rag import generate_questions
 import secrets
@@ -12,29 +13,73 @@ import os
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # User database file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USERS_FILE = os.path.join(BASE_DIR, 'users.json')
 print(f"📁 Users file will be saved at: {USERS_FILE}")
 
-def load_users():
-    """Load user database from JSON file"""
-    print(f"📁 Looking for users.json at: {USERS_FILE}")
-    print(f"📁 File exists? {os.path.exists(USERS_FILE)}")
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'r') as f:
-            data = json.load(f)
-            print(f"📁 Loaded {len(data)} users")
-            return data
-    print("📁 No users.json found, creating new one")
-    return {}
+# ============================================================================
+# SUPABASE DATABASE OPERATIONS
+# These functions interact with the Supabase backend database for user management
+# ============================================================================
 
-def save_users(users_data):
-    """Save user database to JSON file"""
-    print(f"📁 Saving users to: {USERS_FILE}")
-    with open(USERS_FILE, 'w') as f:
-        json.dump(users_data, f, indent=2)
+def get_user(email):
+    """
+    Fetch user from Supabase by email
+    
+    Args:
+        email (str): User's email address to search for
+    
+    Returns:
+        dict: User data if found, None otherwise
+    """
+    try:
+        result = supabase.table("users").select("*").eq("email", email).execute()
+        if result.data:
+            return result.data[0]
+        return None
+    except Exception as e:
+        print(f"❌ Error getting user: {e}")
+        return None
+
+def create_user(user_data):
+    """
+    Create new user in Supabase
+    
+    Args:
+        user_data (dict): User information (name, email, mobile, class, etc.)
+    
+    Returns:
+        dict: Created user data if successful, None on failure
+    """
+    try:
+        result = supabase.table("users").insert(user_data).execute()
+        return result.data[0] if result.data else None
+    except Exception as e:
+        print(f"❌ Error creating user: {e}")
+        return None
+
+def update_user(email, updates):
+    """
+    Update user fields in Supabase
+    
+    Args:
+        email (str): User's email to identify who to update
+        updates (dict): Dictionary of fields to update (hourly_count, daily_count, etc.)
+    
+    Returns:
+        dict: Updated user data if successful, None on failure
+    """
+    try:
+        result = supabase.table("users").update(updates).eq("email", email).execute()
+        return result.data[0] if result.data else None
+    except Exception as e:
+        print(f"❌ Error updating user: {e}")
+        return None
 
 # Rate limiting for anonymous users (IP-based)
 ANONYMOUS_LIMIT = {}
@@ -72,17 +117,33 @@ def check_anonymous_limit(ip_address):
     
     return True, "✅ Free paper available (1/1)"
 
+# ============================================================================
+# RATE LIMITING FOR LOGGED-IN USERS (Supabase-based)
+# Checks if user has exceeded hourly (2 papers) and daily (5 papers) limits
+# Updates user counters in Supabase database
+# ============================================================================
+
 def check_user_limit(email):
-    """Check if logged-in user has exceeded rate limits"""
-    users = load_users()
+    """
+    Check if logged-in user has exceeded rate limits by querying Supabase
     
-    if email not in users:
+    Args:
+        email (str): User's email address
+    
+    Returns:
+        tuple: (bool, str) - (allowed, message)
+               - allowed: True if user can generate more papers, False if limit exceeded
+               - message: Status message about remaining papers and time
+    """
+    # Fetch user data from Supabase database
+    user = get_user(email)
+    
+    if not user:
         return False, "❌ User not found. Please signup."
     
-    user = users[email]
     now = datetime.now()
     
-    # Parse stored datetime strings
+    # Parse stored datetime strings from Supabase
     hourly_reset = datetime.fromisoformat(user['hourly_reset'])
     daily_reset = datetime.fromisoformat(user['daily_reset'])
     
@@ -96,22 +157,29 @@ def check_user_limit(email):
         user['daily_count'] = 0
         user['daily_reset'] = (now + timedelta(days=1)).isoformat()
     
-    # Check limits
+    # Check hourly limit
     if user['hourly_count'] >= REQUESTS_PER_HOUR:
         minutes_left = int((hourly_reset - now).total_seconds() / 60)
         return False, f"⏰ Hourly limit: {REQUESTS_PER_HOUR} papers/hour. Try again in {minutes_left} minutes."
     
+    # Check daily limit
     if user['daily_count'] >= REQUESTS_PER_DAY:
         hours_left = int((daily_reset - now).total_seconds() / 3600)
         return False, f"⏰ Daily limit: {REQUESTS_PER_DAY} papers/day. Try again in {hours_left} hours."
     
-    # Increment counters
+    # Increment both hourly and daily counters
     user['hourly_count'] += 1
     user['daily_count'] += 1
-    users[email] = user
-    save_users(users)
-    print(f"✅ Saved user {email}: hourly={user['hourly_count']}, daily={user['daily_count']}")
     
+    # Save updates to Supabase database
+    update_user(email, {
+        "hourly_count": user['hourly_count'],
+        "daily_count": user['daily_count'],
+        "hourly_reset": user['hourly_reset'],
+        "daily_reset": user['daily_reset']
+    })
+    
+    print(f"✅ Updated {email}: hourly={user['hourly_count']}/{REQUESTS_PER_HOUR}, daily={user['daily_count']}/{REQUESTS_PER_DAY}")
     return True, f"✅ Used: {user['hourly_count']}/{REQUESTS_PER_HOUR} (hour), {user['daily_count']}/{REQUESTS_PER_DAY} (day)"
 
 @app.route("/")
@@ -143,34 +211,48 @@ def signup():
             return render_template("signup.html",
                                  error="❌ Mobile number must be 10 digits!")
         
-        # Check if user already exists
-        users = load_users()
-        if email in users:
-            # User exists, log them in
+        # ====================================================================
+        # CHECK IF USER ALREADY EXISTS IN SUPABASE
+        # Queries Supabase to see if email is already registered
+        # ====================================================================
+        existing_user = get_user(email)
+        if existing_user:
+            # User exists in Supabase, log them in directly
             session['user_email'] = email
-            session['user_name'] = users[email]['name']
+            session['user_name'] = existing_user['name']
+            print(f"✅ Returning user logged in: {existing_user['name']} ({email})")
             return redirect(url_for('home'))
         
-        # Create new user
+        # ====================================================================
+        # CREATE NEW USER IN SUPABASE
+        # Stores user profile data and initializes rate limiting counters
+        # All data is stored in cloud database, not JSON file
+        # ====================================================================
         now = datetime.now()
-        users[email] = {
-            'name': name,
-            'mobile': mobile,
-            'email': email,
-            'class': class_num,
-            'created_at': now.isoformat(),
-            'hourly_count': 0,
-            'hourly_reset': (now + timedelta(hours=1)).isoformat(),
-            'daily_count': 0,
-            'daily_reset': (now + timedelta(days=1)).isoformat()
+        new_user = {
+            "email": email,
+            "name": name,
+            "mobile": mobile,
+            "class_teaching": class_num,
+            "created_at": now.isoformat(),
+            "hourly_count": 0,
+            "hourly_reset": (now + timedelta(hours=1)).isoformat(),
+            "daily_count": 0,
+            "daily_reset": (now + timedelta(days=1)).isoformat()
         }
-        save_users(users)
+        created = create_user(new_user)
         
-        # Log user in
+        if not created:
+            return render_template("signup.html", error="❌ Signup failed. Please try again.")
+        
+        # ====================================================================
+        # LOG NEW USER IN (Set session cookies)
+        # Creates browser session to keep user logged in
+        # ====================================================================
         session['user_email'] = email
         session['user_name'] = name
         
-        print(f"✅ New user registered: {name} ({email})")
+        print(f"✅ New user created and logged in: {name} ({email})")
         return redirect(url_for('home'))
     
     # GET request - show signup form

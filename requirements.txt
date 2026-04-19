@@ -4,3 +4,4 @@ pypdf==3.17.4
 reportlab==4.0.7
 Werkzeug==3.0.1
 gunicorn==21.2.0
+supabase==0.0.1
