@@ -1,3 +1,6 @@
+# FORCE REBUILD - v2
+#from supabase import create_client, Client
+
 from supabase import create_client, Client
 from flask import Flask, render_template, request, make_response, session, redirect, url_for
 from rag import generate_questions
