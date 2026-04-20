@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 import io
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
