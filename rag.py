@@ -58,12 +58,17 @@ def load_pdfs_for_class(subject, class_num, chapter):
     
     # ===== SECTION 1: Normalize subject name to folder name =====
     # This helps convert user input (math/maths) to actual folder names (Mathematics)
-    if subject.lower() in ["mathematics", "math", "maths"]:
+    subject_lower = subject.lower()
+    if subject_lower in ["mathematics", "math", "maths"]:
         folder_name = "Mathematics"
-    elif subject.lower() == "science":
+    elif subject_lower == "science":
         folder_name = "Science"
+    elif subject_lower == "physics":
+        folder_name = "Physics"
+    elif subject_lower == "chemistry":
+        folder_name = "Chemistry"
     else:
-        folder_name = subject  # fallback to whatever user provided
+        folder_name = subject  # fallback  # fallback to whatever user provided
     
     # ===== SECTION 2: Build and check folder path =====
     # Construct the full path where PDFs should be located
@@ -495,25 +500,50 @@ IMPORTANT:
 - Do NOT ask theoretical questions like "What is an equation?"
 - Do NOT create MCQs
 - Focus on SOLVING and CALCULATING"""
-            else:  # Science
-                format_instruction = """Generate ONLY NUMERICAL PROBLEMS for Science in this EXACT format:
+            elif subject.lower() in ["science", "physics", "chemistry"]:
+                  format_instruction = f"""Generate ONLY NUMERICAL PROBLEMS for {subject} in this EXACT format:
 
-Q1. Calculate: [Numerical problem related to Science concept]
+Q1. Calculate: [Numerical problem related to {subject} concept]
 Answer:
-Step 1: [Calculation or explanation]
-Step 2: [Calculation]
-Final Answer: [Numerical result with units]
+Step 1: [Formula or equation setup]
+Step 2: [Substitution of values]
+Step 3: [Calculation with proper units]
+Final Answer: [Numerical result with appropriate units]
 
-EXAMPLES FOR SCIENCE:
-- Calculate the speed if distance is 100m and time is 5s
-- If a force of 10N is applied over an area of 2m², calculate the pressure
-- Calculate the percentage of oxygen in air if it is 21 parts per 100
+Q2. Solve: [Another {subject} numerical problem]
+Answer:
+Step 1: [Setup]
+Step 2: [Calculation]
+Final Answer: [Result with units]
+
+EXAMPLES FOR {subject}:
+- Calculate the force when mass is 10 kg and acceleration is 5 m/s² (F = ma = 10 × 5 = 50 N)
+- Find the pressure when force 100 N is applied on area 2 m² (P = F/A = 100/2 = 50 Pa)
+- Calculate the current when voltage is 12 V and resistance is 4 Ω (I = V/R = 12/4 = 3 A)
+- Find the number of moles in 18 g of water (Molar mass 18 g/mol, moles = 18/18 = 1 mol)
+
+IMPORTANT:
+- EVERY question must have NUMBERS and require CALCULATIONS
+- Use appropriate SI units (m, kg, s, N, J, W, A, V, Ω, mol, etc.)
+- Show step-by-step working with formulas clearly stated
+- Include units in final answers
+- Do NOT ask theoretical or definition-based questions
+- Do NOT create MCQs with A/B/C/D options"""
+
+            else:  # Science
+                format_instruction = f"""Generate ONLY NUMERICAL PROBLEMS for {subject} in this EXACT format:
+
+Q1. Calculate: [Numerical problem with specific values]
+Answer:
+Step 1: [Formula]
+Step 2: [Calculation]
+Final Answer: [Result with units]
 
 IMPORTANT:
 - Include numbers and calculations
-- Relate to Science concepts (force, pressure, speed, etc.)
-- Show working/steps
-- Include units in answers"""
+- Show step-by-step working
+- Include units in answers
+- Do NOT create MCQs"""
         
         else:  # Mixed
             system_message = "You are an expert NCERT question paper creator. You create a mix of MCQs, short answer, and long answer questions."
