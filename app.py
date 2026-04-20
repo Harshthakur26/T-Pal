@@ -151,9 +151,7 @@ def check_user_limit(email):
 
 # Rate limiting for anonymous users (IP-based)
 ANONYMOUS_LIMIT = {}
-REQUESTS_PER_HOUR = 1  # Free tier: 4 papers per hour per IP
-REQUESTS_PER_DAY = 2   # Free tier: 15 papers per day per IP
-
+REQUESTS_PER_HOUR = 1  # Anonymous users: 1 paper per hour per IP
 
 def check_anonymous_limit(ip_address):
     """Check if anonymous user (no login) has used their 1 free paper"""
@@ -184,75 +182,6 @@ def check_anonymous_limit(ip_address):
         return False, "🔒 Free paper used! Please signup to continue."
     
     return True, "✅ Free paper available (1/1)"
-
-# ============================================================================
-# RATE LIMITING FOR LOGGED-IN USERS (Supabase-based)
-# Checks if user has exceeded hourly (2 papers) and daily (5 papers) limits
-# Updates user counters in Supabase database
-# ============================================================================
-
-def check_user_limit(email):
-    """
-    Check if logged-in user has exceeded rate limits by querying Supabase
-    
-    Args:
-        email (str): User's email address
-    
-    Returns:
-        tuple: (bool, str) - (allowed, message)
-               - allowed: True if user can generate more papers, False if limit exceeded
-               - message: Status message about remaining papers and time
-    """
-    # Fetch user data from Supabase database
-    user = get_user(email)
-    
-    if not user:
-        return False, "❌ User not found. Please signup."
-    
-    now = datetime.now()
-    
-    # Parse stored datetime strings from Supabase
-    hourly_reset = datetime.fromisoformat(user['hourly_reset'])
-    daily_reset = datetime.fromisoformat(user['daily_reset'])
-    
-    # Reset hourly counter if time has passed
-    if now > hourly_reset:
-        user['hourly_count'] = 0
-        user['hourly_reset'] = (now + timedelta(hours=1)).isoformat()
-    
-    # Reset daily counter if time has passed
-    if now > daily_reset:
-        user['daily_count'] = 0
-        user['daily_reset'] = (now + timedelta(days=1)).isoformat()
-    
-    # Check hourly limit
-    if user['hourly_count'] >= REQUESTS_PER_HOUR:
-        minutes_left = int((hourly_reset - now).total_seconds() / 60)
-        return False, f"⏰ Hourly limit: {REQUESTS_PER_HOUR} papers/hour. Try again in {minutes_left} minutes."
-    
-    # Check daily limit
-    if user['daily_count'] >= REQUESTS_PER_DAY:
-        hours_left = int((daily_reset - now).total_seconds() / 3600)
-        return False, f"⏰ Daily limit: {REQUESTS_PER_DAY} papers/day. Try again in {hours_left} hours."
-    
-    # Increment both hourly and daily counters
-    user['hourly_count'] += 1
-    user['daily_count'] += 1
-    
-    # Save updates to Supabase database
-    update_user(email, {
-        "hourly_count": user['hourly_count'],
-        "daily_count": user['daily_count'],
-        "hourly_reset": user['hourly_reset'],
-        "daily_reset": user['daily_reset']
-    })
-    
-    print(f"✅ Updated {email}: hourly={user['hourly_count']}/{REQUESTS_PER_HOUR}, daily={user['daily_count']}/{REQUESTS_PER_DAY}")
-    return True, f"✅ Used: {user['hourly_count']}/{REQUESTS_PER_HOUR} (hour), {user['daily_count']}/{REQUESTS_PER_DAY} (day)"
-
-@app.route("/")
-def home():
-    return render_template("index.html")
 
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
