@@ -81,6 +81,74 @@ def update_user(email, updates):
         print(f"❌ Error updating user: {e}")
         return None
 
+# CHANGE 2: Update check_user_limit() Function
+# (Adapted for Supabase instead of PostgreSQL/JSON)
+# ============================================
+def check_user_limit(email):
+    """Check if logged-in user has exceeded rate limits
+    
+    NEW: Different limits for FREE vs PREMIUM users
+    """
+    user = get_user(email)  # Get from Supabase
+    
+    if not user:
+        return False, "❌ User not found. Please signup."
+    
+    now = datetime.now()
+    
+    # Parse stored datetime strings
+    hourly_reset = datetime.fromisoformat(user['hourly_reset'])
+    daily_reset = datetime.fromisoformat(user['daily_reset'])
+    
+    # Reset hourly counter if time has passed
+    if now > hourly_reset:
+        user['hourly_count'] = 0
+        user['hourly_reset'] = (now + timedelta(hours=1)).isoformat()
+    
+    # Reset daily counter if time has passed
+    if now > daily_reset:
+        user['daily_count'] = 0
+        user['daily_reset'] = (now + timedelta(days=1)).isoformat()
+    
+    # ========== NEW: Different limits for FREE vs PREMIUM ==========
+    is_premium = user.get('is_premium', False)
+    
+    if is_premium:
+        # PREMIUM USERS: 2 papers/hour, 5 papers/day
+        hourly_limit = 2
+        daily_limit = 5
+    else:
+        # FREE USERS: 1 paper/hour, 1 paper/day
+        hourly_limit = 1
+        daily_limit = 1
+    
+    tier_name = "Premium" if is_premium else "Free"
+    # ========== END DIFFERENT LIMITS ==========
+    
+    # Check limits
+    if user['hourly_count'] >= hourly_limit:
+        minutes_left = int((hourly_reset - now).total_seconds() / 60)
+        return False, f"⏰ {tier_name} limit: {hourly_limit} papers/hour. Try again in {minutes_left} minutes."
+    
+    if user['daily_count'] >= daily_limit:
+        hours_left = int((daily_reset - now).total_seconds() / 3600)
+        return False, f"⏰ {tier_name} limit: {daily_limit} papers/day. Try again in {hours_left} hours."
+    
+    # Increment counters
+    user['hourly_count'] += 1
+    user['daily_count'] += 1
+    
+    # Update user in Supabase
+    updates = {
+        'hourly_count': user['hourly_count'],
+        'daily_count': user['daily_count'],
+        'hourly_reset': user['hourly_reset'],
+        'daily_reset': user['daily_reset']
+    }
+    update_user(email, updates)
+    
+    return True, f"✅ {tier_name} user: {user['hourly_count']}/{hourly_limit} (hour), {user['daily_count']}/{daily_limit} (day)"
+
 # Rate limiting for anonymous users (IP-based)
 ANONYMOUS_LIMIT = {}
 REQUESTS_PER_HOUR = 1  # Free tier: 4 papers per hour per IP
@@ -220,6 +288,9 @@ def signup():
             # User exists in Supabase, log them in directly
             session['user_email'] = email
             session['user_name'] = existing_user['name']
+            # CHANGE 4: Load Premium Status Into Session
+            # ============================================
+            session['user_premium'] = existing_user.get('is_premium', False)  # ← ADD THIS LINE
             print(f"✅ Returning user logged in: {existing_user['name']} ({email})")
             return redirect(url_for('home'))
         
@@ -234,6 +305,9 @@ def signup():
             "name": name,
             "mobile": mobile,
             "class_teaching": class_num,
+            # CHANGE 3: Update Signup to Add is_premium Field
+            # ============================================
+            'is_premium': False,  # ← ADD THIS LINE (new users start as FREE)
             "created_at": now.isoformat(),
             "hourly_count": 0,
             "hourly_reset": (now + timedelta(hours=1)).isoformat(),
@@ -251,6 +325,9 @@ def signup():
         # ====================================================================
         session['user_email'] = email
         session['user_name'] = name
+        # CHANGE 4: Load Premium Status Into Session
+        # ============================================
+        session['user_premium'] = False  # ← ADD THIS LINE (new users are FREE)
         
         print(f"✅ New user created and logged in: {name} ({email})")
         return redirect(url_for('home'))
@@ -274,6 +351,14 @@ def generate():
         
         # Check if user is logged in
         user_email = session.get('user_email')
+        
+        # ========== Load/Refresh Premium Status ==========
+        if user_email:
+            # Get fresh user data from Supabase
+            user = get_user(user_email)
+            if user:
+                # Update session with current premium status
+                session['user_premium'] = user.get('is_premium', False)
         
         if user_email:
             # LOGGED-IN USER: Check user-specific limits (2/hour, 5/day)
@@ -305,6 +390,54 @@ def generate():
         num_q = request.form.get("num_questions", "10")
         difficulty = request.form.get("difficulty", "Medium")
         question_type = request.form.get("question_type", "Mixed")
+        
+        # ========== PREMIUM FEATURE CHECK ==========
+        # Check if user is trying to use premium features (>5 questions)
+        user_email = session.get('user_email')
+        is_premium = session.get('user_premium', False)
+        
+        # Convert num_q to integer
+        try:
+            num_questions = int(num_q)
+        except:
+            num_questions = 5
+        
+        # VALIDATION: Free users can ONLY generate 5 questions
+        if not is_premium and num_questions > 5:
+            # User is FREE but trying to generate >5 questions - BLOCK IT!
+            return render_template("index.html",
+                                 questions=f"""❌ <strong>Premium Feature Locked!</strong>
+        
+        <div style='background: #fff5f5; padding: 20px; border-radius: 10px; border-left: 4px solid #fc8181; margin: 20px 0;'>
+            <p style='color: #c53030; font-size: 16px; margin-bottom: 10px;'>
+                You're trying to generate <strong>{num_questions} questions</strong>, 
+                but free users can only generate <strong>5 questions</strong>.
+            </p>
+        </div>
+        
+        <div style='background: #f0fff4; padding: 20px; border-radius: 10px; border-left: 4px solid #48bb78; margin: 20px 0;'>
+            <h3 style='color: #22543d; margin-bottom: 10px;'>💎 Upgrade to Premium (₹300/month):</h3>
+            <ul style='color: #2f855a; margin-left: 20px;'>
+                <li>✅ Generate 10, 15, or 20 questions</li>
+                <li>✅ 5 papers per day (vs 1 for free)</li>
+                <li>✅ Priority support</li>
+                <li>✅ All subjects & classes</li>
+            </ul>
+        </div>
+        
+        <div style='text-align: center; margin-top: 20px;'>
+            <a href='/upgrade' style='display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                       color: white; padding: 15px 40px; border-radius: 10px; text-decoration: none; 
+                                       font-weight: 700; font-size: 16px;'>
+                Upgrade Now →
+            </a>
+        </div>
+        """,
+                                 subject=subject,
+                                 class_num=class_num,
+                                 chapter=chapter)
+        
+        print(f"✅ Premium check passed: User={user_email}, Premium={is_premium}, Questions={num_questions}")
         
         print(f"📊 Generating: {subject}, Class {class_num}, {chapter}, Type: {question_type}")
         
@@ -385,6 +518,13 @@ def download():
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename=question_paper_{subject}_class{class_num}.pdf'
     return response
+
+# CHANGE 5: Add /upgrade Route
+# ============================================
+@app.route("/upgrade")
+def upgrade():
+    """Show premium upgrade page"""
+    return render_template("upgrade.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

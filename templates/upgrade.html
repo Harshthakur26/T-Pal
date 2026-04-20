@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upgrade to T-PAL Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .logo {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .price {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .price-amount {
+            font-size: 56px;
+            color: #2d3748;
+            font-weight: 700;
+            display: inline-block;
+        }
+        
+        .price-period {
+            font-size: 24px;
+            color: #718096;
+            vertical-align: top;
+        }
+        
+        .price-note {
+            color: #48bb78;
+            font-size: 14px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        
+        .comparison {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .comparison h3 {
+            color: #2d3748;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px;
+            gap: 15px;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-name {
+            color: #4a5568;
+            font-size: 15px;
+        }
+        
+        .free-col {
+            text-align: center;
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .premium-col {
+            text-align: center;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .features-list {
+            margin: 30px 0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            background: #f0fff4;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .feature-content {
+            flex: 1;
+        }
+        
+        .feature-title {
+            font-size: 16px;
+            color: #22543d;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .feature-desc {
+            font-size: 14px;
+            color: #2f855a;
+        }
+        
+        .contact-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            color: white;
+            text-align: center;
+        }
+        
+        .contact-box h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .contact-methods {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .contact-btn {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .contact-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .price-amount {
+                font-size: 44px;
+            }
+            
+            .comparison-row {
+                grid-template-columns: 1fr 60px 60px;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">💎</div>
+    <h1>Upgrade to Premium</h1>
+    <p class="subtitle">Unlock unlimited question generation for your classes</p>
+    
+    <div class="price">
+        <div>
+            <span class="price-amount">₹300</span>
+            <span class="price-period">/month</span>
+        </div>
+        <div class="price-note">✨ Save time, generate better papers!</div>
+    </div>
+    
+    <div class="comparison">
+        <h3>📊 Free vs Premium Comparison</h3>
+        <div class="comparison-row">
+            <div class="feature-name">Questions per paper</div>
+            <div class="free-col">Only 5</div>
+            <div class="premium-col">5-20 ✓</div>
+        </div>
+        <div class="comparison-row">
+            <div class="feature-name">Papers per day</div>
+            <div class="free-col">1 paper</div>
+            <div class="premium-col">5 papers ✓</div>
+        </div>
+        <div class="comparison-row">
+            <div class="feature-name">All subjects</div>
+            <div class="free-col">✓</div>
+            <div class="premium-col">✓</div>
+        </div>
+        <div class="comparison-row">
+            <div class="feature-name">Priority support</div>
+            <div class="free-col">—</div>
+            <div class="premium-col">✓</div>
+        </div>
+    </div>
+    
+    <div class="features-list">
+        <div class="feature-item">
+            <div class="feature-icon">🔢</div>
+            <div class="feature-content">
+                <div class="feature-title">Generate 5-20 Questions</div>
+                <div class="feature-desc">Create papers with exactly the number of questions you need</div>
+            </div>
+        </div>
+        
+        <div class="feature-item">
+            <div class="feature-icon">📝</div>
+            <div class="feature-content">
+                <div class="feature-title">5 Papers Per Day</div>
+                <div class="feature-desc">Prepare for multiple classes without hitting limits</div>
+            </div>
+        </div>
+        
+        <div class="feature-item">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-content">
+                <div class="feature-title">Priority Support</div>
+                <div class="feature-desc">Get help faster when you need it</div>
+            </div>
+        </div>
+        
+        <div class="feature-item">
+            <div class="feature-icon">🎓</div>
+            <div class="feature-content">
+                <div class="feature-title">All Subjects & Classes</div>
+                <div class="feature-desc">Maths, Science, Physics, Chemistry for Classes 6-12</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="contact-box">
+        <h3>🚀 Ready to Upgrade?</h3>
+        <p style="font-size: 15px; margin-bottom: 15px; opacity: 0.95;">
+            Contact us to activate your premium account instantly!
+        </p>
+        <div class="contact-methods">
+            <a href="https://wa.me/919876543210?text=Hi!%20I%20want%20to%20upgrade%20to%20T-PAL%20Premium" 
+               class="contact-btn" target="_blank">
+                📱 8225989020
+            </a>
+            <a href="mailto:upgrade@tpal.com?subject=T-PAL%20Premium%20Upgrade" 
+               class="contact-btn">
+                📧 26harshthakur@gmail.com
+            </a>
+        </div>
+        <p style="font-size: 13px; margin-top: 15px; opacity: 0.9;">
+            Pay via UPI, Google Pay, Paytm, or Bank Transfer
+        </p>
+    </div>
+    
+    <div class="back-link">
+        <a href="/">← Back to T-PAL</a>
+    </div>
+</div>
+
+</body>
+</html>
+
+<!-- 
+INSTRUCTIONS:
+1. Save this file as: templates/upgrade.html
+2. Update WhatsApp number: Replace 919876543210 with YOUR number
+3. Update email: Replace upgrade@tpal.com with YOUR email
+4. Add route in app.py:
+   @app.route("/upgrade")
+   def upgrade():
+       return render_template("upgrade.html")
+-->
