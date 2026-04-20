@@ -151,7 +151,9 @@ def check_user_limit(email):
 
 # Rate limiting for anonymous users (IP-based)
 ANONYMOUS_LIMIT = {}
-REQUESTS_PER_HOUR = 1  # Anonymous users: 1 paper per hour per IP
+REQUESTS_PER_HOUR = 1  # Free tier: 4 papers per hour per IP
+REQUESTS_PER_DAY = 2   # Free tier: 15 papers per day per IP
+
 
 def check_anonymous_limit(ip_address):
     """Check if anonymous user (no login) has used their 1 free paper"""
