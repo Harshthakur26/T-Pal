@@ -83,8 +83,8 @@ def update_user(email, updates):
 
 # Rate limiting for anonymous users (IP-based)
 ANONYMOUS_LIMIT = {}
-REQUESTS_PER_HOUR = 2  # Free tier: 4 papers per hour per IP
-REQUESTS_PER_DAY = 5   # Free tier: 15 papers per day per IP
+REQUESTS_PER_HOUR = 1  # Free tier: 4 papers per hour per IP
+REQUESTS_PER_DAY = 2   # Free tier: 15 papers per day per IP
 
 
 def check_anonymous_limit(ip_address):
