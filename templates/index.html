@@ -820,10 +820,9 @@ toggleNumericalOption();
      ============================================================== -->
 <script>
 // Runs every time user changes the class dropdown
-document.getElementById("class_num").addEventListener("change", function() {
-    
-    var selectedClass = parseInt(this.value);  // Get selected class as number
-    var subjectDropdown = document.getElementById("subject");  // Get subject dropdown
+document.getElementById("classSelect").addEventListener("change", function() {
+    var selectedClass = parseInt(this.value);
+    var subjectDropdown = document.getElementById("subjectSelect");
     var options = subjectDropdown.options;  // Get all subject options
     
     // Loop through every subject option to show/hide based on class
@@ -861,7 +860,7 @@ document.getElementById("class_num").addEventListener("change", function() {
 });
 
 // Run once on page load to set correct state for initially selected class
-document.getElementById("class_num").dispatchEvent(new Event("change"));
+document.getElementById("classSelect").dispatchEvent(new Event("change"));
 </script>
 <!-- ============================================================== -->
 
