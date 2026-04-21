@@ -1,6 +1,3 @@
-# FORCE REBUILD - v2
-#from supabase import create_client, Client
-
 from supabase import create_client, Client
 from flask import Flask, render_template, request, make_response, session, redirect, url_for
 from rag import generate_questions
@@ -8,7 +5,7 @@ import secrets
 import json
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
 from reportlab.lib.units import inch
 from datetime import datetime, timedelta
 import io
@@ -460,15 +457,50 @@ def download():
     story.append(Spacer(1, 0.2*inch))
     
     # Add questions
+
+# ===== SPLIT QUESTIONS AND ANSWERS =====
     lines = questions.split('\n')
+    question_lines = []
+    answer_lines = []
+    in_answer = False
+
     for line in lines:
-        if line.strip():
-            clean_line = line.strip()
-            story.append(Paragraph(clean_line, question_style))
+        stripped = line.strip()
+        if not stripped:
+            continue
+        # Detect answer lines
+        if stripped.startswith('Answer:') or stripped.startswith('Ans:'):
+            in_answer = True
+            answer_lines.append(stripped)
+        elif stripped.startswith('Q') and in_answer:
+            # New question starts after an answer block
+            in_answer = False
+            question_lines.append(stripped)
+        elif in_answer:
+            # continuation of answer (like steps)
+            answer_lines.append(stripped)
+        else:
+            question_lines.append(stripped)
+
+    # ===== PAGE 1: QUESTIONS ONLY =====
+        story.append(Paragraph("Section A — Questions", styles['Heading2']))
+        story.append(Spacer(1, 0.2*inch))
+        for line in question_lines:
+            story.append(Paragraph(line, question_style))
             story.append(Spacer(1, 0.1*inch))
-    
-    doc.build(story)
-    buffer.seek(0)
+
+        # ===== PAGE BREAK =====
+        story.append(PageBreak())
+
+        # ===== PAGE 2: ANSWERS ONLY =====
+        story.append(Paragraph("Answer Key", styles['Heading2']))
+        story.append(Spacer(1, 0.2*inch))
+        for line in answer_lines:
+            story.append(Paragraph(line, question_style))
+            story.append(Spacer(1, 0.1*inch))
+            
+            doc.build(story)
+            buffer.seek(0)
     
     # Send as downloadable PDF
     response = make_response(buffer.getvalue())
