@@ -418,7 +418,6 @@ def download():
     class_num = request.form["class_num"]
     chapter = request.form["chapter"]
     
-    # Create PDF in memory
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4,
                            rightMargin=inch,
@@ -429,7 +428,6 @@ def download():
     styles = getSampleStyleSheet()
     story = []
     
-    # Header
     title_style = ParagraphStyle(
         'CustomTitle',
         parent=styles['Heading1'],
@@ -450,15 +448,11 @@ def download():
         leading=16
     )
     
-    # Add school header
     story.append(Paragraph("Question Paper", title_style))
     story.append(Paragraph(f"Subject: {subject} | Class: {class_num} | Chapter: {chapter}", subtitle_style))
     story.append(Paragraph("_" * 60, subtitle_style))
     story.append(Spacer(1, 0.2*inch))
     
-    # Add questions
-
-# ===== SPLIT QUESTIONS AND ANSWERS =====
     lines = questions.split('\n')
     question_lines = []
     answer_lines = []
@@ -468,41 +462,34 @@ def download():
         stripped = line.strip()
         if not stripped:
             continue
-        # Detect answer lines
         if stripped.startswith('Answer:') or stripped.startswith('Ans:'):
             in_answer = True
             answer_lines.append(stripped)
         elif stripped.startswith('Q') and in_answer:
-            # New question starts after an answer block
             in_answer = False
             question_lines.append(stripped)
         elif in_answer:
-            # continuation of answer (like steps)
             answer_lines.append(stripped)
         else:
             question_lines.append(stripped)
 
-    # ===== PAGE 1: QUESTIONS ONLY =====
-        story.append(Paragraph("Section A — Questions", styles['Heading2']))
-        story.append(Spacer(1, 0.2*inch))
-        for line in question_lines:
-            story.append(Paragraph(line, question_style))
-            story.append(Spacer(1, 0.1*inch))
+    story.append(Paragraph("Section A — Questions", styles['Heading2']))
+    story.append(Spacer(1, 0.2*inch))
+    for line in question_lines:
+        story.append(Paragraph(line, question_style))
+        story.append(Spacer(1, 0.1*inch))
 
-        # ===== PAGE BREAK =====
-        story.append(PageBreak())
+    story.append(PageBreak())
 
-        # ===== PAGE 2: ANSWERS ONLY =====
-        story.append(Paragraph("Answer Key", styles['Heading2']))
-        story.append(Spacer(1, 0.2*inch))
-        for line in answer_lines:
-            story.append(Paragraph(line, question_style))
-            story.append(Spacer(1, 0.1*inch))
-            
-            doc.build(story)
-            buffer.seek(0)
+    story.append(Paragraph("Answer Key", styles['Heading2']))
+    story.append(Spacer(1, 0.2*inch))
+    for line in answer_lines:
+        story.append(Paragraph(line, question_style))
+        story.append(Spacer(1, 0.1*inch))
+
+    doc.build(story)
+    buffer.seek(0)
     
-    # Send as downloadable PDF
     response = make_response(buffer.getvalue())
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename=question_paper_{subject}_class{class_num}.pdf'
