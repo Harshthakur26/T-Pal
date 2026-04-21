@@ -188,6 +188,29 @@ def check_anonymous_limit(ip_address):
     
     return True, "✅ Free paper available (1/1)"
 
+# ==================== HOME ROUTE ====================
+# This route handles the homepage (root URL "/")
+# It retrieves user info from the session if they're logged in
+# and renders the main question generator interface
+# @app.route("/") - maps this function to the root path of the app
+@app.route("/")
+def home():
+    """Homepage - main question generator"""
+    # Get the user's name from session (None if not logged in)
+    user_name = session.get('user_name', None)
+    # Check if user has premium access (defaults to False)
+    user_premium = session.get('user_premium', False)
+    # Render the index.html template with initial empty values
+    # The template will handle the question generation logic
+    return render_template("index.html",
+                         questions=None,          # No questions initially
+                         subject="",              # Empty subject selection
+                         class_num="",            # Empty class selection
+                         chapter="",              # Empty chapter selection
+                         user_name=user_name,     # Pass user name to template
+                         user_premium=user_premium)  # Pass premium status to template
+# ====================================================
+
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
     """Signup page for new users"""
