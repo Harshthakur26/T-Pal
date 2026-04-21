@@ -812,5 +812,58 @@ subjectSelect.addEventListener('change', toggleNumericalOption);
 toggleNumericalOption();
 </script>
 
+<!-- ==================== CLASS SELECTOR SCRIPT ====================
+     This script handles dynamic subject filtering based on class selection
+     Different classes have different available subjects:
+     - Classes 6-10: Show Science and Mathematics, Hide Physics and Chemistry
+     - Classes 11-12: Show Physics, Chemistry, and Mathematics, Hide Science
+     ============================================================== -->
+<script>
+// Runs every time user changes the class dropdown
+document.getElementById("class_num").addEventListener("change", function() {
+    
+    var selectedClass = parseInt(this.value);  // Get selected class as number
+    var subjectDropdown = document.getElementById("subject");  // Get subject dropdown
+    var options = subjectDropdown.options;  // Get all subject options
+    
+    // Loop through every subject option to show/hide based on class
+    for (var i = 0; i < options.length; i++) {
+        var subject = options[i].value;
+        
+        if (selectedClass <= 10) {
+            // Class 6-10: Show Science + Maths, Hide Physics/Chemistry
+            if (subject === "Physics" || subject === "Chemistry") {
+                options[i].style.display = "none";   // Hide it from dropdown
+                options[i].disabled = true;           // Disable it so it can't be selected
+            } else {
+                options[i].style.display = "";        // Show it in dropdown
+                options[i].disabled = false;          // Enable it for selection
+            }
+        } else {
+            // Class 11-12: Show Physics/Chemistry/Maths, Hide Science
+            if (subject === "Science") {
+                options[i].style.display = "none";
+                options[i].disabled = true;
+            } else {
+                options[i].style.display = "";
+                options[i].disabled = false;
+            }
+        }
+    }
+    
+    // Auto-select first visible option to avoid disabled subject staying selected
+    for (var j = 0; j < options.length; j++) {
+        if (!options[j].disabled) {
+            subjectDropdown.selectedIndex = j;  // Set the first available subject as selected
+            break;
+        }
+    }
+});
+
+// Run once on page load to set correct state for initially selected class
+document.getElementById("class_num").dispatchEvent(new Event("change"));
+</script>
+<!-- ============================================================== -->
+
 </body>
 </html>
