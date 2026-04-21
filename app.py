@@ -464,7 +464,8 @@ def download():
             continue
         if stripped.startswith('Answer:') or stripped.startswith('Ans:'):
             in_answer = True
-            answer_lines.append(stripped)
+            q_count = len(answer_lines) + 1
+            answer_lines.append(f"Ans {q_count}. {stripped}")
         elif stripped.startswith('Q') and in_answer:
             in_answer = False
             question_lines.append(stripped)

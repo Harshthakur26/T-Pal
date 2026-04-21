@@ -473,7 +473,14 @@
                 </button>
             </form>
         </div>
-        <div class="questions-box">{{ questions }}</div>
+        <div class="questions-box" id="questionsBox">{{ questions }}</div>
+        <div style="text-align:center; margin-top:15px;">
+            <button onclick="toggleAnswers()" id="toggleBtn"
+                style="background:#667eea; color:white; padding:10px 25px; 
+                       border:none; border-radius:8px; cursor:pointer; font-size:14px;">
+                👁️ Show Answers
+            </button>
+        </div>
     </div>
     {% endif %}
 </div>
@@ -861,6 +868,55 @@ document.getElementById("classSelect").addEventListener("change", function() {
 
 // Run once on page load to set correct state for initially selected class
 document.getElementById("classSelect").dispatchEvent(new Event("change"));
+</script>
+<!-- ============================================================== -->
+
+<!-- ==================== ANSWER TOGGLE SCRIPT ====================
+     This script allows toggling between showing and hiding answers
+     - Answers are blurred by default when the page loads
+     - Users can click the toggle button to show/hide answers
+     - Lines starting with "Answer" or "Ans" will be blurred/unblurred
+     ============================================================== -->
+<script>
+// Function to toggle answer visibility by applying/removing blur effect
+function toggleAnswers() {
+    var box = document.getElementById('questionsBox');
+    var btn = document.getElementById('toggleBtn');
+    var text = box.innerHTML;
+    
+    if (btn.innerText.includes('Show')) {
+        // Show answers — display normally by removing blur
+        btn.innerText = '🙈 Hide Answers';
+    } else {
+        // Hide answers — blur the Answer lines
+        btn.innerText = '👁️ Show Answers';
+    }
+    
+    // Toggle blur on answer lines - find all paragraphs and blur answer sections
+    var lines = box.querySelectorAll('p');
+    lines.forEach(function(line) {
+        // Check if line starts with "Answer" or "Ans" to identify answer lines
+        if (line.innerText.startsWith('Answer') || line.innerText.startsWith('Ans')) {
+            // Toggle blur: if already blurred, remove it; if not, apply blur
+            line.style.filter = line.style.filter === 'blur(5px)' ? 'blur(0px)' : 'blur(5px)';
+        }
+    });
+}
+
+// Hide answers by default on page load
+window.onload = function() {
+    var box = document.getElementById('questionsBox');
+    if (box) {
+        // Find all paragraphs in the questions box
+        var lines = box.querySelectorAll('p');
+        lines.forEach(function(line) {
+            // Blur any lines that start with "Answer" or "Ans" on page load
+            if (line.innerText.startsWith('Answer') || line.innerText.startsWith('Ans')) {
+                line.style.filter = 'blur(5px)';  // Apply blur effect to answers
+            }
+        });
+    }
+}
 </script>
 <!-- ============================================================== -->
 
