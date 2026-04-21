@@ -473,7 +473,13 @@
                 </button>
             </form>
         </div>
-        <div class="questions-box" id="questionsBox">{{ questions }}</div>
+        <div class="questions-box" id="questionsBox">
+        {% for line in questions.split('\n') %}
+        {% if line.strip() %}
+            <p class="qline">{{ line }}</p>
+        {% endif %}
+    {% endfor %}
+</div>
         <div style="text-align:center; margin-top:15px;">
             <button onclick="toggleAnswers()" id="toggleBtn"
                 style="background:#667eea; color:white; padding:10px 25px; 
@@ -893,7 +899,7 @@ function toggleAnswers() {
     }
     
     // Toggle blur on answer lines - find all paragraphs and blur answer sections
-    var lines = box.querySelectorAll('p');
+    var lines = box.querySelectorAll('.qline');
     lines.forEach(function(line) {
         // Check if line starts with "Answer" or "Ans" to identify answer lines
         if (line.innerText.startsWith('Answer') || line.innerText.startsWith('Ans')) {
@@ -908,7 +914,7 @@ window.onload = function() {
     var box = document.getElementById('questionsBox');
     if (box) {
         // Find all paragraphs in the questions box
-        var lines = box.querySelectorAll('p');
+        var lines = box.querySelectorAll('.qline');
         lines.forEach(function(line) {
             // Blur any lines that start with "Answer" or "Ans" on page load
             if (line.innerText.startsWith('Answer') || line.innerText.startsWith('Ans')) {
