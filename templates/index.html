@@ -901,24 +901,29 @@ function toggleAnswers() {
     // Toggle blur on answer lines - find all paragraphs and blur answer sections
     var lines = box.querySelectorAll('.qline');
     lines.forEach(function(line) {
-        // Check if line starts with "Answer" or "Ans" to identify answer lines
-        if (line.innerText.startsWith('Answer') || line.innerText.startsWith('Ans')) {
-            // Toggle blur: if already blurred, remove it; if not, apply blur
+        // Check if line is part of an answer block:
+        // "Ans X." / "Answer" = answer header | "Step N:" = steps in Numerical | "Final Answer:" = last line
+        var t = line.innerText.trim();
+        if (t.startsWith('Answer') || t.startsWith('Ans') || t.startsWith('Step') || t.startsWith('Final Answer')) {
             line.style.filter = line.style.filter === 'blur(5px)' ? 'blur(0px)' : 'blur(5px)';
         }
     });
+}
+
+// Helper — true if a line belongs to the answer/solution block
+function isAnswerLine(t) {
+    return t.startsWith('Answer') || t.startsWith('Ans') ||
+           t.startsWith('Step') || t.startsWith('Final Answer');
 }
 
 // Hide answers by default on page load
 window.onload = function() {
     var box = document.getElementById('questionsBox');
     if (box) {
-        // Find all paragraphs in the questions box
         var lines = box.querySelectorAll('.qline');
         lines.forEach(function(line) {
-            // Blur any lines that start with "Answer" or "Ans" on page load
-            if (line.innerText.startsWith('Answer') || line.innerText.startsWith('Ans')) {
-                line.style.filter = 'blur(5px)';  // Apply blur effect to answers
+            if (isAnswerLine(line.innerText.trim())) {
+                line.style.filter = 'blur(5px)';
             }
         });
     }
