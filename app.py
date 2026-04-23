@@ -84,6 +84,11 @@ def update_user(email, updates):
 # CHANGE 2: Update check_user_limit() Function
 # (Adapted for Supabase instead of PostgreSQL/JSON)
 # ============================================
+REQUESTS_PER_HOUR_FOR_PREMIUM = 2  # Premium tier: 2 papers per hour per IP
+REQUESTS_PER_DAY_FOR_PREMIUM = 5  # Premium tier: 5 papers per day per IP
+REQUESTS_PER_HOUR_FOR_FREE = 1  # Free tier: 1 paper per hour per IP
+REQUESTS_PER_DAY_FOR_FREE = 1  # Free tier: 1 paper per day per IP
+
 def check_user_limit(email):
     """Check if logged-in user has exceeded rate limits
     
@@ -115,12 +120,12 @@ def check_user_limit(email):
     
     if is_premium:
         # PREMIUM USERS: 2 papers/hour, 5 papers/day
-        hourly_limit = 2
-        daily_limit = 5
+        hourly_limit = REQUESTS_PER_HOUR_FOR_PREMIUM
+        daily_limit = REQUESTS_PER_DAY_FOR_PREMIUM
     else:
         # FREE USERS: 1 paper/hour, 1 paper/day
-        hourly_limit = 1
-        daily_limit = 1
+        hourly_limit = REQUESTS_PER_HOUR_FOR_FREE
+        daily_limit = REQUESTS_PER_DAY_FOR_FREE
     
     tier_name = "Premium" if is_premium else "Free"
     # ========== END DIFFERENT LIMITS ==========
@@ -151,9 +156,6 @@ def check_user_limit(email):
 
 # Rate limiting for anonymous users (IP-based)
 ANONYMOUS_LIMIT = {}
-REQUESTS_PER_HOUR = 1  # Free tier: 4 papers per hour per IP
-REQUESTS_PER_DAY = 2   # Free tier: 15 papers per day per IP
-
 
 def check_anonymous_limit(ip_address):
     """Check if anonymous user (no login) has used their 1 free paper"""
@@ -457,20 +459,37 @@ def download():
     question_lines = []
     answer_lines = []
     in_answer = False
+    current_question_num = 0
 
     for line in lines:
         stripped = line.strip()
         if not stripped:
             continue
-        if stripped.startswith('Answer:') or stripped.startswith('Ans:'):
-            in_answer = True
-            q_count = len(answer_lines) + 1
-            answer_lines.append(f"Ans {q_count}. {stripped}")
-        elif stripped.startswith('Q') and in_answer:
+            
+        # Check if this is a new question (starts with Q followed by number)
+        if stripped.startswith('Q') and any(c.isdigit() for c in stripped[:3]):
+            # Extract question number
+            import re
+            match = re.match(r'Q(\d+)', stripped)
+            if match:
+                current_question_num = int(match.group(1))
             in_answer = False
             question_lines.append(stripped)
+            
+        # Check if this is an answer marker
+        elif stripped.startswith('Answer:') or stripped.startswith('Ans:'):
+            in_answer = True
+            if current_question_num > 0:
+                answer_lines.append(f"Ans {current_question_num}. {stripped}")
+            else:
+                # Fallback: use count of answers + 1
+                answer_lines.append(f"Ans {len(answer_lines) + 1}. {stripped}")
+                
+        # If we're in answer section, collect answer lines
         elif in_answer:
             answer_lines.append(stripped)
+            
+        # Otherwise, it's a question line
         else:
             question_lines.append(stripped)
 
