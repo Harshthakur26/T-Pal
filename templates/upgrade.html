@@ -206,20 +206,27 @@
             text-decoration: underline;
         }
         
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px 20px;
-            }
-            
-            .price-amount {
-                font-size: 44px;
-            }
-            
-            .comparison-row {
-                grid-template-columns: 1fr 60px 60px;
-                gap: 10px;
-            }
+            @media (max-width: 600px) {
+        .container {
+            padding: 30px 20px;
+            text-align: center;        /* ADD THIS */
         }
+        
+        .price-amount {
+            font-size: 44px;
+        }
+        
+        .comparison-row {
+            grid-template-columns: 1fr 60px 60px;
+            gap: 10px;
+        }
+        
+        /* Fix table text alignment on mobile */
+        .feature-name {
+            text-align: left;          /* ADD THIS */
+        }
+        }
+        
     </style>
 </head>
 <body>
