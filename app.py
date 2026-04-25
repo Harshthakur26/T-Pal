@@ -522,6 +522,42 @@ def upgrade():
     """Show premium upgrade page"""
     return render_template("upgrade.html")
 
+# ============================================================================
+# STATIC PAGES ROUTES
+# These routes render static HTML pages (terms, privacy policy, etc.)
+# ============================================================================
+
+@app.route("/terms")
+def terms():
+    """
+    Render the Terms and Conditions page
+    
+    This route displays the terms.html template which contains
+    the legal terms and conditions for using the T-Pal service.
+    
+    Returns:
+        HTML template: terms.html
+    """
+    return render_template("terms.html")
+
+@app.route("/privacy")
+def privacy():
+    """
+    Render the Privacy Policy page
+    
+    This route displays the privacy.html template which explains
+    how T-Pal collects, uses, and protects user data.
+    
+    Returns:
+        HTML template: privacy.html
+    """
+    return render_template("privacy.html")
+
+# ============================================================================
+# APP ENTRY POINT
+# This runs the Flask development server when app.py is executed directly
+# ============================================================================
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)

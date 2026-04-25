@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Terms of Service - T-PAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .header {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 20px 35px;
+            max-width: 820px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo { font-size: 36px; }
+
+        .header-text h1 {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .header-text p {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.98);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .page-title {
+            font-size: 28px;
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .last-updated {
+            font-size: 13px;
+            color: #a0aec0;
+            margin-bottom: 30px;
+        }
+
+        .intro-box {
+            background: linear-gradient(135deg, #ebf4ff, #e8e8f8);
+            border-left: 5px solid #667eea;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 30px;
+            font-size: 15px;
+            color: #2c5282;
+            line-height: 1.7;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .num {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        p {
+            font-size: 15px;
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin: 8px 0 10px 20px;
+        }
+
+        ul li {
+            font-size: 15px;
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 6px;
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 12px 0;
+        }
+
+        .tier-box {
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .tier-box.free {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+        }
+
+        .tier-box.premium {
+            background: #f0e8ff;
+            border: 2px solid #9f7aea;
+        }
+
+        .tier-box h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tier-box.free h4 { color: #4a5568; }
+        .tier-box.premium h4 { color: #6b46c1; }
+
+        .tier-box li {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .highlight-box {
+            background: #fff5f0;
+            border-left: 4px solid #fc8181;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 12px 0;
+            font-size: 14px;
+            color: #c53030;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            margin: 30px 0;
+        }
+
+        .contact-footer {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .contact-footer h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .contact-footer a {
+            color: #fefefe;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        @media (max-width: 600px) {
+            .card { padding: 25px 20px; }
+            .tier-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <div class="logo">📚</div>
+        <div class="header-text">
+            <h1>T-PAL</h1>
+            <p>AI-Powered Question Paper Generator</p>
+        </div>
+    </div>
+    <a href="/" class="back-btn">← Back to Home</a>
+</div>
+
+<div class="container">
+    <div class="card">
+        <div class="page-title">📋 Terms of Service</div>
+        <div class="last-updated">Last updated: April 2025</div>
+
+        <div class="intro-box">
+            Welcome to T-PAL. By creating an account or using our service, you agree to these Terms of Service. Please read them carefully before using the platform.
+        </div>
+
+        <div class="section">
+            <div class="section-title"><span class="num">1</span> What is T-PAL?</div>
+            <p>T-PAL is an AI-powered question paper generator designed for teachers of Classes 6–12 (NCERT syllabus). It generates questions across subjects like Mathematics, Science, Physics, and Chemistry.</p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section">
+            <div class="section-title"><span class="num">2</span> Account & Eligibility</div>
+            <p>To use T-PAL, you must:</p>
+            <ul>
+                <li>Provide a valid name, email address, and mobile number during signup</li>
+                <li>Be a teacher, educator, or student using the tool for educational purposes</li>
+                <li>Not share your account credentials with others</li>
+                <li>Be responsible for all activity that occurs under your account</li>
+            </ul>
+            <p>We reserve the right to suspend accounts that violate these terms.</p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section">
+            <div class="section-title"><span class="num">3</span> Free vs Premium Tiers</div>
+            <p>T-PAL operates on a freemium model:</p>
+            <div class="tier-grid">
+                <div class="tier-box free">
+                    <h4>🆓 Free Tier</h4>
+                    <ul>
+                        <li>5 questions per paper</li>
+                        <li>1 paper per day</li>
+                        <li>All subjects & classes</li>
+                    </ul>
+                </div>
+                <div class="tier-box premium">
+                    <h4>💎 Premium (₹300/month)</h4>
+                    <ul>
+                        <li>5–20 questions per paper</li>
+                        <li>5 papers per day</li>
+                        <li>Priority support</li>
+                    </ul>
+                </div>
+            </div>
+            <p>Premium is activated manually after payment confirmation. Free tier limits are enforced automatically by the system.</p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section">
+            <div class="section-title"><span class="num">4</span> Payments & Refund Policy</div>
+            <p>Premium subscriptions are ₹300/month, paid via UPI (GPay, PhonePe, Paytm, or bank transfer).</p>
+            <ul>
+                <li>Payments are processed manually — your premium access is activated within 24 hours of payment confirmation</li>
+                <li>Subscriptions are <strong>non-refundable</strong> once premium access has been activated</li>
+                <li>If premium is not activated within 24 hours of your payment, contact us.</li>
+                <li>Subscriptions do not auto-renew — you must renew manually each month</li>
+            </ul>
+            <div class="highlight-box">
+                ⚠️ Do not pay to any account other than the official UPI/QR shown on the Upgrade page. T-PAL is not responsible for payments made to unofficial accounts.
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section">
+            <div class="section-title"><span class="num">5</span> Acceptable Use</div>
+            <p>You agree to use T-PAL only for lawful, educational purposes. You must NOT:</p>
+            <ul>
+                <li>Use T-PAL to generate content for commercial redistribution without permission</li>
+                <li>Attempt to bypass rate limits or premium restrictions through technical means</li>
+                <li>Use automated bots or scripts to access the platform</li>
+                <li>Share, sell, or redistribute generated question papers as your own product</li>
+            </ul>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section">
+            <div class="section-title"><span class="num">6</span> Intellectual Property</div>
+            <p>The T-PAL platform, its design, code, and branding are owned by T-PAL. Generated question papers are for your personal educational use. The underlying AI model is provided by Anthropic (Claude).</p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section">
+            <div class="section-title"><span class="num">7</span> Limitation of Liability</div>
+            <p>T-PAL provides AI-generated content which may occasionally contain errors. We are not responsible for:</p>
+            <ul>
+                <li>Inaccuracies in generated questions or answers</li>
+                <li>Any consequences arising from use of generated content in exams or classrooms</li>
+                <li>Service downtime or technical interruptions</li>
+            </ul>
+            <p>Always review generated content before use in an academic setting.</p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section">
+            <div class="section-title"><span class="num">8</span> Changes to These Terms</div>
+            <p>We may update these Terms from time to time. Continued use of T-PAL after changes means you accept the updated terms. We'll note the "Last updated" date at the top of this page.</p>
+        </div>
+
+        <div class="contact-footer">
+            <h3>📞 Questions About These Terms?</h3>
+            <p style="font-size:14px; opacity:0.95; margin-top:6px;">
+                Email: <a href="mailto:26harshthakur@gmail.com">26harshthakur@gmail.com</a> &nbsp;|&nbsp;
+                WhatsApp: <a href="https://wa.me/918225989020">+91 82259 89020</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/upgrade">Upgrade to Premium</a>
+    </div>
+</div>
+
+</body>
+</html>
