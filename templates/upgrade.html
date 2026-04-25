@@ -296,19 +296,36 @@
     </div>
     
     <div class="contact-box">
-        <h3>🚀 Ready to Upgrade?</h3>
-        <p style="font-size: 15px; margin-bottom: 15px; opacity: 0.95;">
-            Contact us to activate your premium account instantly!
-        </p>
-        <div class="contact-methods">
-            <a href="https://wa.me/918225989020?text=Hi!%20I%20want%20to%20upgrade%20to%20T-PAL%20Premium" 
-               class="contact-btn" target="_blank">
-                📱 8225989020
-            </a>
-            <a href="mailto:26harshthakur@gmail.com?subject=T-PAL%20Premium%20Upgrade" 
-               class="contact-btn">
-                📧 26harshthakur@gmail.com
-            </a>
+    <h3>💳 Scan & Pay ₹300</h3>
+    <p style="font-size:14px; opacity:0.9; margin-bottom:15px;">
+        Pay via GPay, PhonePe, Paytm — any UPI app
+    </p>
+
+    <!-- QR CODE IMAGE -->
+    <img src="{{ url_for('static', filename='qr_code.jpeg') }}" 
+         alt="UPI QR Code" 
+         style="width:210px; height:210px; border-radius:12px; 
+                background:white; padding:10px; margin-bottom:15px; display:block; margin-left:auto; margin-right:auto;">
+
+    <p style="font-size:14px; opacity:0.9; margin-bottom:15px;">
+        UPI ID: <strong>your-upi-id@ybl</strong>
+    </p>
+
+    <p style="font-size:13px; opacity:0.85; margin-bottom:10px;">
+        After payment → send screenshot on WhatsApp 👇
+    </p>
+
+    <div class="contact-methods">
+        <a href="https://wa.me/918225989020?text=Hi!%20I%20paid%20for%20T-PAL%20Premium.%20Sending%20screenshot!" 
+           class="contact-btn" target="_blank">
+            📱 Send Screenshot on WhatsApp
+        </a>
+        <a href="mailto:26harshthakur@gmail.com?subject=T-PAL%20Premium%20Upgrade" 
+           class="contact-btn">
+            📧 Email Us
+        </a>
+    </div>
+</div>
         </div>
         <p style="font-size: 13px; margin-top: 15px; opacity: 0.9;">
             Pay via UPI, Google Pay, Paytm, or Bank Transfer
