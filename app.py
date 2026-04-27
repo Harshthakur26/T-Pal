@@ -88,6 +88,8 @@ REQUESTS_PER_HOUR_FOR_PREMIUM = 2  # Premium tier: 2 papers per hour per IP
 REQUESTS_PER_DAY_FOR_PREMIUM = 5  # Premium tier: 5 papers per day per IP
 REQUESTS_PER_HOUR_FOR_FREE = 1  # Free tier: 1 paper per hour per IP
 REQUESTS_PER_DAY_FOR_FREE = 1  # Free tier: 1 paper per day per IP
+REQUESTS_PER_HOUR_FOR_SUPER_PREMIUM = 5
+REQUESTS_PER_DAY_FOR_SUPER_PREMIUM = 20
 
 def check_user_limit(email):
     """Check if logged-in user has exceeded rate limits
@@ -117,8 +119,13 @@ def check_user_limit(email):
     
     # ========== NEW: Different limits for FREE vs PREMIUM ==========
     is_premium = user.get('is_premium', False)
+    is_super_premium = user.get('is_super_premium', False)  # ← ADD THIS LINE FOR SUPER PREMIUM CHECK
     
-    if is_premium:
+    if is_super_premium:
+        # SUPER PREMIUM USERS: 5 papers/hour, 20 papers/day
+        hourly_limit = REQUESTS_PER_HOUR_FOR_SUPER_PREMIUM
+        daily_limit = REQUESTS_PER_DAY_FOR_SUPER_PREMIUM
+    elif is_premium:
         # PREMIUM USERS: 2 papers/hour, 5 papers/day
         hourly_limit = REQUESTS_PER_HOUR_FOR_PREMIUM
         daily_limit = REQUESTS_PER_DAY_FOR_PREMIUM
@@ -127,7 +134,7 @@ def check_user_limit(email):
         hourly_limit = REQUESTS_PER_HOUR_FOR_FREE
         daily_limit = REQUESTS_PER_DAY_FOR_FREE
     
-    tier_name = "Premium" if is_premium else "Free"
+    tier_name = "Super Premium" if is_super_premium else "Premium" if is_premium else "Free"
     # ========== END DIFFERENT LIMITS ==========
     
     # Check limits
