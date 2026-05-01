@@ -19,8 +19,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # User database file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-USERS_FILE = os.path.join(BASE_DIR, 'users.json')
-print(f"📁 Users file will be saved at: {USERS_FILE}")
+
 
 # ============================================================================
 # SUPABASE DATABASE OPERATIONS
