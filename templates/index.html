@@ -981,7 +981,7 @@ document.getElementById("classSelect").addEventListener("change", function() {
         
         if (selectedClass <= 10) {
             // Class 6-10: Show Science + Maths, Hide Physics/Chemistry
-            if (subject === "Physics" || subject === "Chemistry" || subject === "Biology") {
+            if (subject === "Physics" || subject === "Chemistry" || subject === "Biology" || subject === "Social-Science") {
                 options[i].style.display = "none";   // Hide it from dropdown
                 options[i].disabled = true;           // Disable it so it can't be selected
             } else {
