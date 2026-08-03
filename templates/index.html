@@ -990,7 +990,7 @@ document.getElementById("classSelect").addEventListener("change", function() {
             }
         } else {
             // Class 11-12: Show Physics/Chemistry/Maths, Hide Science
-            if (subject === "Science") {
+            if (subject === "Science" || subject === "Social-Science") {
                 options[i].style.display = "none";
                 options[i].disabled = true;
             } else {
