@@ -2,102 +2,7 @@ CHAPTER_MAP = {
     # ========================================================================
     # SCIENCE (Classes 6-10) - EXISTING 6-9 UNTOUCHED, Class 10 ADDED
     # ========================================================================
-    "Social Science": {
-        # Class 6 - EXISTING (UNTOUCHED)
-        "6": {
-            "why social science?": "fees101.pdf",
-            "locating places on the earth": "fees101.pdf",
-            "oceans and continents": "fees102.pdf",
-            "landforms and life": "fees103.pdf",
-            "timeline and sources of history": "fees104.pdf",
-            "india, that is bharat": "fees105.pdf",
-            "the beginnings of indian civilisation": "fees106.pdf",
-            "india's cultural roots": "fees107.pdf",
-            "unity in diversity, or 'many in the one'": "fees108.pdf",
-            "family and community": "fees109.pdf",
-            "grassroots democracy - part 1: governance": "fees110.pdf",
-            "grassroots democracy - part 2: local government in rural areas": "fees111.pdf",
-            "grassroots democracy - part 3: local government in urban areas": "fees112.pdf",
-            "the value of work": "fees113.pdf",
-            "economic activities around us": "fees114.pdf"
-        },
-        # Class 7 - EXISTING (UNTOUCHED)
-        "7": {
-            "geographical diversity of india": "gees101.pdf",
-            "understanding the weather": "gees102.pdf",
-            "climates of india": "gees103.pdf",
-            "new beginnings: cities and states": "gees104.pdf",
-            "the rise of empires": "gees105.pdf",
-            "the age of reorganisation": "gees106.pdf",
-            "the gupta era: an age of tireless creativity": "gees107.pdf",
-            "how the land becomes sacred": "gees108.pdf",
-            "from the rulers to the ruled: types of governments": "gees109.pdf",
-            "the constitution of india — an introduction": "gees110.pdf",
-            "from barter to money": "gees111.pdf",
-            "understanding markets": "gees112.pdf",
-            "the story of indian farming": "gees201.pdf",
-            "india and her neighbours": "gees202.pdf",
-            "empires and kingdoms: 6th to 10th centuries": "gees203.pdf",
-            "turning tides: 11th and 12th centuries": "gees204.pdf",
-            "india, a home to many": "gees205.pdf",
-            "the state, the government, and you": "gees206.pdf",
-            "infrastructure: engine of india's development": "gees207.pdf",
-            "banks and the magic of finance": "gees208.pdf"
-  },
-  # Class 8 - EXISTING (UNTOUCHED)
-  "8": {
-    "natural resources and their use": "hees101.pdf",
-    "reshaping india's political map": "hees102.pdf",
-    "the rise of the marathas": "hees103.pdf",
-    "the colonial era in india": "hees104.pdf",
-    "universal franchise and india's electoral system": "hees105.pdf",
-    "the parliamentary system: legislature and executive": "hees106.pdf",
-    "factors of production": "hees107.pdf",
-    "world geography: some glimpses": "hees201.pdf",
-    "india's long road to independence": "hees202.pdf",
-    "a journey through indian architecture": "hees203.pdf",
-    "the role of the judiciary in our society": "hees204.pdf",
-    "citizenship: rights and duties": "hees205.pdf",
-    "dynamics of population": "hees206.pdf",
-    "india's urban landscape": "hees207.pdf",
-    "cultural currents: 13th to 17th centuries": "hees209.pdf"
-  },
-  "9": {
-    "understanding social science": "iest101.pdf",
-    "shaping of the earth's surface": "iest102.pdf",
-    "atmosphere and climate": "iest103.pdf",
-    "early humans and beginning of civilisation": "iest104.pdf",
-    "state and society up to 1000 ce": "iest105.pdf",
-    "democracy": "iest106.pdf",
-    "elections": "iest107.pdf",
-    "building blocks in economics: the problem of choice": "iest108.pdf",
-    "the price puzzle: what drives the market": "iest109.pdf"
-  },
-  "10": {
-    "resources and development": "jess101.pdf",
-    "forest and wildlife resources": "jess102.pdf",
-    "water resources": "jess103.pdf",
-    "agriculture": "jess104.pdf",
-    "minerals and energy resources": "jess105.pdf",
-    "manufacturing industries": "jess106.pdf",
-    "lifelines of national economy": "jess107.pdf",
-    "development": "jess201.pdf",
-    "sectors of the indian economy": "jess202.pdf",
-    "money and credit": "jess203.pdf",
-    "globalisation and the indian economy": "jess204.pdf",
-    "consumer rights": "jess205.pdf",
-    "the rise of nationalism in europe": "jess301.pdf",
-    "nationalism in india": "jess302.pdf",
-    "the making of a global world": "jess303.pdf",
-    "the age of industrialisation": "jess304.pdf",
-    "print culture and the modern world": "jess305.pdf",
-    "power-sharing": "jess401.pdf",
-    "federalism": "jess402.pdf",
-    "gender, religion and caste": "jess403.pdf",
-    "political parties": "jess404.pdf",
-    "outcomes of democracy": "jess405.pdf"
-  }
-    },
+
     "Science": {
         # Class 6 - EXISTING (UNTOUCHED)
         "6": {
@@ -399,5 +304,101 @@ CHAPTER_MAP = {
             "ecosystem": "lebo112.pdf",
             "biodiversity and conservation": "lebo113.pdf",
         },
+    },
+    "Social Science": {
+        # Class 6 - EXISTING (UNTOUCHED)
+        "6": {
+            "why social science?": "fees101.pdf",
+            "locating places on the earth": "fees101.pdf",
+            "oceans and continents": "fees102.pdf",
+            "landforms and life": "fees103.pdf",
+            "timeline and sources of history": "fees104.pdf",
+            "india, that is bharat": "fees105.pdf",
+            "the beginnings of indian civilisation": "fees106.pdf",
+            "india's cultural roots": "fees107.pdf",
+            "unity in diversity, or 'many in the one'": "fees108.pdf",
+            "family and community": "fees109.pdf",
+            "grassroots democracy - part 1: governance": "fees110.pdf",
+            "grassroots democracy - part 2: local government in rural areas": "fees111.pdf",
+            "grassroots democracy - part 3: local government in urban areas": "fees112.pdf",
+            "the value of work": "fees113.pdf",
+            "economic activities around us": "fees114.pdf"
+        },
+        # Class 7 - EXISTING (UNTOUCHED)
+        "7": {
+            "geographical diversity of india": "gees101.pdf",
+            "understanding the weather": "gees102.pdf",
+            "climates of india": "gees103.pdf",
+            "new beginnings: cities and states": "gees104.pdf",
+            "the rise of empires": "gees105.pdf",
+            "the age of reorganisation": "gees106.pdf",
+            "the gupta era: an age of tireless creativity": "gees107.pdf",
+            "how the land becomes sacred": "gees108.pdf",
+            "from the rulers to the ruled: types of governments": "gees109.pdf",
+            "the constitution of india — an introduction": "gees110.pdf",
+            "from barter to money": "gees111.pdf",
+            "understanding markets": "gees112.pdf",
+            "the story of indian farming": "gees201.pdf",
+            "india and her neighbours": "gees202.pdf",
+            "empires and kingdoms: 6th to 10th centuries": "gees203.pdf",
+            "turning tides: 11th and 12th centuries": "gees204.pdf",
+            "india, a home to many": "gees205.pdf",
+            "the state, the government, and you": "gees206.pdf",
+            "infrastructure: engine of india's development": "gees207.pdf",
+            "banks and the magic of finance": "gees208.pdf"
+  },
+    # Class 8 - EXISTING (UNTOUCHED)
+    "8": {
+        "natural resources and their use": "hees101.pdf",
+        "reshaping india's political map": "hees102.pdf",
+        "the rise of the marathas": "hees103.pdf",
+        "the colonial era in india": "hees104.pdf",
+        "universal franchise and india's electoral system": "hees105.pdf",
+        "the parliamentary system: legislature and executive": "hees106.pdf",
+        "factors of production": "hees107.pdf",
+        "world geography: some glimpses": "hees201.pdf",
+        "india's long road to independence": "hees202.pdf",
+        "a journey through indian architecture": "hees203.pdf",
+        "the role of the judiciary in our society": "hees204.pdf",
+        "citizenship: rights and duties": "hees205.pdf",
+        "dynamics of population": "hees206.pdf",
+        "india's urban landscape": "hees207.pdf",
+        "cultural currents: 13th to 17th centuries": "hees209.pdf"
+    },
+    "9": {
+        "understanding social science": "iest101.pdf",
+        "shaping of the earth's surface": "iest102.pdf",
+        "atmosphere and climate": "iest103.pdf",
+        "early humans and beginning of civilisation": "iest104.pdf",
+        "state and society up to 1000 ce": "iest105.pdf",
+        "democracy": "iest106.pdf",
+        "elections": "iest107.pdf",
+        "building blocks in economics: the problem of choice": "iest108.pdf",
+        "the price puzzle: what drives the market": "iest109.pdf"
+    },
+    "10": {
+        "resources and development": "jess101.pdf",
+        "forest and wildlife resources": "jess102.pdf",
+        "water resources": "jess103.pdf",
+        "agriculture": "jess104.pdf",
+        "minerals and energy resources": "jess105.pdf",
+        "manufacturing industries": "jess106.pdf",
+        "lifelines of national economy": "jess107.pdf",
+        "development": "jess201.pdf",
+        "sectors of the indian economy": "jess202.pdf",
+        "money and credit": "jess203.pdf",
+        "globalisation and the indian economy": "jess204.pdf",
+        "consumer rights": "jess205.pdf",
+        "the rise of nationalism in europe": "jess301.pdf",
+        "nationalism in india": "jess302.pdf",
+        "the making of a global world": "jess303.pdf",
+        "the age of industrialisation": "jess304.pdf",
+        "print culture and the modern world": "jess305.pdf",
+        "power-sharing": "jess401.pdf",
+        "federalism": "jess402.pdf",
+        "gender, religion and caste": "jess403.pdf",
+        "political parties": "jess404.pdf",
+        "outcomes of democracy": "jess405.pdf"
+    }
     }
 }
