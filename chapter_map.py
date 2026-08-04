@@ -305,7 +305,7 @@ CHAPTER_MAP = {
             "biodiversity and conservation": "lebo113.pdf",
         },
     },
-    "Social Science": {
+    "SocialScience": {
         # Class 6 - EXISTING (UNTOUCHED)
         "6": {
             "why social science?": "fees101.pdf",
