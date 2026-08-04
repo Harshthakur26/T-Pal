@@ -67,6 +67,10 @@ def load_pdfs_for_class(subject, class_num, chapter):
         folder_name = "Physics"
     elif subject_lower == "chemistry":
         folder_name = "Chemistry"
+    elif subject_lower == "biology":
+        folder_name = "Biology"
+    elif subject_lower in ["socialscience", "social-science", "social science"]:
+        folder_name = "SocialScience"
     else:
         folder_name = subject  # fallback  # fallback to whatever user provided
     
