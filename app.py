@@ -511,7 +511,6 @@ def download():
     story.append(Spacer(1, 0.1*inch))
     for line in answer_lines:
         story.append(Paragraph(line, question_style))
-        story.append(Spacer(1, 0.1*inch))
 
     doc.build(story)
     buffer.seek(0)
