@@ -453,7 +453,8 @@ def download():
         parent=styles['Normal'],
         fontSize=11,
         spaceAfter=4,
-        leading=16
+        spaceBefore=0,
+        leading=13
     )
     
     story.append(Paragraph("Question Paper", title_style))
