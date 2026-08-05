@@ -452,7 +452,7 @@ def download():
         'QuestionStyle',
         parent=styles['Normal'],
         fontSize=11,
-        spaceAfter=12,
+        spaceAfter=4,
         leading=16
     )
     
@@ -503,12 +503,12 @@ def download():
     story.append(Spacer(1, 0.2*inch))
     for line in question_lines:
         story.append(Paragraph(line, question_style))
-        story.append(Spacer(1, 0.1*inch))
+        story.append(Spacer(1, 0.05*inch))
 
     story.append(PageBreak())
 
     story.append(Paragraph("Answer Key", styles['Heading2']))
-    story.append(Spacer(1, 0.2*inch))
+    story.append(Spacer(1, 0.1*inch))
     for line in answer_lines:
         story.append(Paragraph(line, question_style))
         story.append(Spacer(1, 0.1*inch))
