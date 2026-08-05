@@ -450,7 +450,7 @@ def download():
     )
     question_style = ParagraphStyle(
         'QuestionStyle',
-        parent=styles['Normal'],
+        fontName='Helvetica',
         fontSize=11,
         spaceAfter=4,
         spaceBefore=0,
@@ -503,6 +503,8 @@ def download():
     story.append(Paragraph("Section A — Questions", styles['Heading2']))
     story.append(Spacer(1, 0.2*inch))
     for line in question_lines:
+        if not line.strip():    # ← extra safety, skip any empty strings
+           continue
         story.append(Paragraph(line, question_style))
         if line.startswith('Q') and any(c.isdigit() for c in line[:3]):  # ← if HERE
             story.append(Spacer(1, 0.05*inch))
