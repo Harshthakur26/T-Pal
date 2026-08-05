@@ -503,15 +503,15 @@ def download():
     story.append(Spacer(1, 0.2*inch))
     for line in question_lines:
         story.append(Paragraph(line, question_style))
-        story.append(Spacer(1, 0.05*inch))
+        if line.startswith('Q') and any(c.isdigit() for c in line[:3]):  # ← if HERE
+            story.append(Spacer(1, 0.05*inch))
 
     story.append(PageBreak())
 
     story.append(Paragraph("Answer Key", styles['Heading2']))
     story.append(Spacer(1, 0.1*inch))
     for line in answer_lines:
-        if line.startswith('Q') and any(c.isdigit() for c in line[:3]):
-            story.append(Spacer(1, 0.05*inch))
+        story.append(Paragraph(line, question_style))
 
     doc.build(story)
     buffer.seek(0)
