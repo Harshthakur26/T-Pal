@@ -212,10 +212,14 @@
         .qline {
             font-family: 'Segoe UI', sans-serif;
             font-size: 14px;
-            line-height: 1.4;
+            line-height: 1.5;
             margin: 0;
-            padding: 0;
+            padding: 1px 0;
             white-space: normal;
+}
+.qline[data-type="question"] {
+    margin-top: 14px;       /* gap before each new question */
+    font-weight: 600;       /* make question bold */
 }
         
         .loading {
@@ -484,10 +488,14 @@
             </form>
         </div>
         <div class="questions-box" id="questionsBox">
-        {% for line in questions.split('\n') %}
-        {% if line.strip() %}
-            <p class="qline">{{ line }}</p>
+    {% for line in questions.split('\n') %}
+    {% if line.strip() %}
+        {% if line.strip().startswith('Q') %}
+            <p class="qline" data-type="question">{{ line }}</p>
+        {% else %}
+            <p class="qline" data-type="option">{{ line }}</p>
         {% endif %}
+    {% endif %}
     {% endfor %}
 </div>
         <div style="text-align:center; margin-top:15px;">
