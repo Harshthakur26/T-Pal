@@ -510,7 +510,8 @@ def download():
     story.append(Paragraph("Answer Key", styles['Heading2']))
     story.append(Spacer(1, 0.1*inch))
     for line in answer_lines:
-        story.append(Paragraph(line, question_style))
+        if line.startswith('Q') and any(c.isdigit() for c in line[:3]):
+            story.append(Spacer(1, 0.05*inch))
 
     doc.build(story)
     buffer.seek(0)
