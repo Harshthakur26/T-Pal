@@ -505,9 +505,9 @@ def download():
     for line in question_lines:
         if not line.strip():    # ← extra safety, skip any empty strings
            continue
-        story.append(Paragraph(line, question_style))
         if line.startswith('Q') and any(c.isdigit() for c in line[:3]):  # ← if HERE
             story.append(Spacer(1, 0.05*inch))
+        story.append(Paragraph(line, question_style))
 
     story.append(PageBreak())
 
