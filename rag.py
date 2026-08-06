@@ -605,7 +605,7 @@ Generate the {num_questions} {subject} questions with answers now:"""
                 }
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.5,
+            temperature=0.8,
             max_tokens=2500,
             top_p=0.9,
             stream=False
