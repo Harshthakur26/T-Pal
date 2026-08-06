@@ -425,7 +425,7 @@ Answer: [A/B/C/D]
 
 IMPORTANT: Do NOT create any questions without A/B/C/D options. Every single question MUST be a multiple choice question.
 CRITICAL: Spread correct answers across ALL options - use A, B, C, and D as correct answers. Do NOT repeat the same answer letter consecutively. Example pattern: A, C, B, D, A - never B, B, B, B."""
-        
+
         elif question_type == "Short Answer":
             system_message = """You are an expert NCERT question paper creator. You ONLY create Short Answer questions (1-2 sentence answers).
 
@@ -606,7 +606,7 @@ Generate the {num_questions} {subject} questions with answers now:"""
                 }
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.5,
+            temperature=0.8,
             max_tokens=2500,
             top_p=0.9,
             stream=False
