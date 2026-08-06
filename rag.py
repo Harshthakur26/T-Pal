@@ -423,7 +423,8 @@ C) [option 3]
 D) [option 4]
 Answer: [A/B/C/D]
 
-IMPORTANT: Do NOT create any questions without A/B/C/D options. Every single question MUST be a multiple choice question."""
+IMPORTANT: Do NOT create any questions without A/B/C/D options. Every single question MUST be a multiple choice question.
+CRITICAL: Spread correct answers across ALL options - use A, B, C, and D as correct answers. Do NOT repeat the same answer letter consecutively. Example pattern: A, C, B, D, A - never B, B, B, B."""
         
         elif question_type == "Short Answer":
             system_message = """You are an expert NCERT question paper creator. You ONLY create Short Answer questions (1-2 sentence answers).
