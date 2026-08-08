@@ -1,6 +1,6 @@
+from flask import send_from_directory
 from supabase import create_client, Client
 from flask import Flask, render_template, request, make_response, session, redirect, url_for
-from flask import send_from_directory
 from rag import generate_questions
 import secrets
 import json
