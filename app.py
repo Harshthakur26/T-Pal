@@ -1,5 +1,6 @@
 from supabase import create_client, Client
 from flask import Flask, render_template, request, make_response, session, redirect, url_for
+from flask import send_from_directory
 from rag import generate_questions
 import secrets
 import json
@@ -561,6 +562,14 @@ def privacy():
         HTML template: privacy.html
     """
     return render_template("privacy.html")
+
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_from_directory('static', 'sitemap.xml')
+
+@app.route('/robots.txt')
+def robots():
+    return send_from_directory('static', 'robots.txt')
 
 # ============================================================================
 # APP ENTRY POINT
