@@ -298,6 +298,38 @@
             </select>
         </div>
 
+        {% if role == 'School' %}
+        <div class="form-group">
+            <label><span class="icon">🏫</span> School Name</label>
+            <input type="text" name="school_name" 
+                   placeholder="e.g., St. Mary's School, DPS" required>
+        </div>
+
+        <div class="form-group">
+            <label><span class="icon">👤</span> Head of Institution Name</label>
+            <input type="text" name="name" 
+                   placeholder="Principal / Director name" required autofocus>
+        </div>
+
+        <div class="form-group">
+            <label><span class="icon">🏙️</span> City</label>
+            <input type="text" name="city" 
+                   placeholder="e.g., Bhopal, Indore, Delhi" required>
+        </div>
+
+        <div class="form-group">
+            <label><span class="icon">📚</span> Classes and Streams</label>
+            <select name="class_num" required>
+                <option value="">-- Select --</option>
+                <option value="6-8">Classes 6 to 8</option>
+                <option value="9-10">Classes 9 to 10</option>
+                <option value="11-12">Classes 11 to 12</option>
+                <option value="6-12">All Classes (6 to 12)</option>
+                <option value="PCM, PCB, Commerce">PCM, PCB, Commerce</option>
+            </select>
+        </div>
+        {% endif %}
+
         {% else %}
         <div class="form-group">
             <label><span class="icon">🎓</span> Your Class</label>

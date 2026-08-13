@@ -236,6 +236,7 @@ def signup():
         email = request.form.get('email', '').strip()
         class_num = request.form.get('class_num', '').strip()
         institute_name = request.form.get('institute_name', '').strip()
+        school_name = request.form.get('school_name', '').strip()
         city = request.form.get('city', '').strip()
         role = request.form.get('role', 'student')
         
@@ -286,7 +287,8 @@ def signup():
             'is_premium': False,  # ← ADD THIS LINE (new users start as FREE)
             'role': role,
             'institute_name': institute_name,  # empty string for students
-            'city': city,   
+            'city': city,
+            'school_name': school_name,  # empty string for non-school users
             "created_at": now.isoformat(),
             "hourly_count": 0,
             "hourly_reset": (now + timedelta(hours=1)).isoformat(),
