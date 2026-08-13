@@ -300,44 +300,30 @@
             </select>
         </div>
 
-    {% elif role == 'school' %}
-        <div class="form-group">
-            <label><span class="icon">🏫</span> School Name</label>
-            <input type="text" name="institute_name" 
-                placeholder="e.g., St. Mary's School, DPS" required>
-        </div>
-        <div class="form-group">
-            <label><span class="icon">🏙️</span> City</label>
-            <input type="text" name="city" 
-                placeholder="e.g., Bhopal, Indore, Delhi" required>
-        </div>
-        <div class="form-group">
-            <label><span class="icon">📚</span> Classes & Streams</label>
-            <select name="class_num" required>
-                <option value="">-- Select --</option>
-                <option value="6-8">Classes 6 to 8</option>
-                <option value="9-10">Classes 9 to 10</option>
-                <option value="11-12">Classes 11 to 12</option>
-                <option value="6-12">All Classes (6 to 12)</option>
-                <option value="PCM, PCB, Commerce">PCM, PCB, Commerce</option>
-            </select>
-        </div>
+        {% elif role == 'school' %}
+            <div class="form-group">
+                <label><span class="icon">🏫</span> School Name</label>
+                <input type="text" name="institute_name" 
+                    placeholder="e.g., St. Mary's School, DPS" required>
+            </div>
+            <div class="form-group">
+                <label><span class="icon">🏙️</span> City</label>
+                <input type="text" name="city" 
+                    placeholder="e.g., Bhopal, Indore, Delhi" required>
+            </div>
+            <div class="form-group">
+                <label><span class="icon">📚</span> Classes & Streams</label>
+                <select name="class_num" required>
+                    <option value="">-- Select --</option>
+                    <option value="6-8">Classes 6 to 8</option>
+                    <option value="9-10">Classes 9 to 10</option>
+                    <option value="11-12">Classes 11 to 12</option>
+                    <option value="6-12">All Classes (6 to 12)</option>
+                    <option value="PCM, PCB, Commerce">PCM, PCB, Commerce</option>
+                </select>
+            </div>
 
-{% else %}
-    <div class="form-group">
-        <label><span class="icon">🎓</span> Your Class</label>
-        <select name="class_num" required>
-            <option value="">-- Select Your Class --</option>
-            <option value="6">Class 6</option>
-            <option value="7">Class 7</option>
-            <option value="8">Class 8</option>
-            <option value="9">Class 9</option>
-            <option value="10">Class 10</option>
-            <option value="11">Class 11</option>
-            <option value="12">Class 12</option>
-        </select>
-    </div>
-        {% else %}
+    {% else %}
         <div class="form-group">
             <label><span class="icon">🎓</span> Your Class</label>
             <select name="class_num" required>
@@ -351,7 +337,7 @@
                 <option value="12">Class 12</option>
             </select>
         </div>
-        {% endif %}
+{% endif %}
         
         <button type="submit" class="btn-signup">
             {% if role == 'coaching' %}🏫 Register My Institute{% elif role == 'school' %}🏫 Register My School{% else %}🚀 Start Practicing{% endif %}
