@@ -232,11 +232,192 @@
 <body>
 
 <div class="container">
+    <div class="container">
     <div class="logo">💎</div>
-    <h1>Upgrade to Premium</h1>
-    <p class="subtitle">Unlock unlimited question generation for your classes</p>
-    
-    <div class="price">
+
+    <!-- ========== STUDENT PRICING ========== -->
+    {% if session.get('user_role') == 'student' %}
+    <h1>Upgrade Your Practice</h1>
+    <p class="subtitle">More papers, more practice, better scores</p>
+
+    <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin:30px 0;">
+        
+        <!-- Free -->
+        <div style="border:2px solid #e2e8f0; border-radius:16px; padding:24px; width:170px; text-align:center;">
+            <div style="font-size:24px;">📄</div>
+            <h3 style="color:#4a5568; margin:8px 0;">Free</h3>
+            <div style="font-size:28px; font-weight:700; color:#2d3748;">₹0</div>
+            <div style="font-size:12px; color:#718096; margin:4px 0 16px;">/month</div>
+            <ul style="list-style:none; font-size:13px; color:#718096; text-align:left; line-height:2;">
+                <li>✓ 1 paper/day</li>
+                <li>✓ 5 questions max</li>
+                <li>✗ Watermark on PDF</li>
+            </ul>
+        </div>
+
+        <!-- Basic -->
+        <div style="border:2px solid #667eea; border-radius:16px; padding:24px; width:170px; text-align:center; position:relative;">
+            <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#667eea; color:white; font-size:11px; font-weight:700; padding:3px 12px; border-radius:20px;">POPULAR</div>
+            <div style="font-size:24px;">⚡</div>
+            <h3 style="color:#667eea; margin:8px 0;">Basic</h3>
+            <div style="font-size:28px; font-weight:700; color:#2d3748;">₹69</div>
+            <div style="font-size:12px; color:#718096; margin:4px 0 16px;">/month</div>
+            <ul style="list-style:none; font-size:13px; color:#4a5568; text-align:left; line-height:2;">
+                <li>✓ 5 papers/day</li>
+                <li>✓ 20 questions/paper</li>
+                <li>✓ No watermark</li>
+            </ul>
+        </div>
+
+        <!-- Pro -->
+        <div style="border:2px solid #764ba2; border-radius:16px; padding:24px; width:170px; text-align:center;">
+            <div style="font-size:24px;">🚀</div>
+            <h3 style="color:#764ba2; margin:8px 0;">Pro</h3>
+            <div style="font-size:28px; font-weight:700; color:#2d3748;">₹149</div>
+            <div style="font-size:12px; color:#718096; margin:4px 0 16px;">/month</div>
+            <ul style="list-style:none; font-size:13px; color:#4a5568; text-align:left; line-height:2;">
+                <li>✓ 10 papers/day</li>
+                <li>✓ 20 questions/paper</li>
+                <li>✓ No watermark</li>
+                <li>✓ AI answer check</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ========== COACHING INSTITUTE PRICING ========== -->
+    {% elif session.get('user_role') == 'coaching' %}
+    <h1>Upgrade Your Institute</h1>
+    <p class="subtitle">Professional papers with your institute's branding</p>
+
+    <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin:30px 0;">
+
+        <!-- Starter -->
+        <div style="border:2px solid #e2e8f0; border-radius:16px; padding:24px; width:180px; text-align:center;">
+            <div style="font-size:24px;">🏫</div>
+            <h3 style="color:#4a5568; margin:8px 0;">Starter</h3>
+            <div style="font-size:28px; font-weight:700; color:#2d3748;">₹299</div>
+            <div style="font-size:12px; color:#718096; margin:4px 0 16px;">/month</div>
+            <ul style="list-style:none; font-size:13px; color:#4a5568; text-align:left; line-height:2;">
+                <li>✓ 20 papers/day</li>
+                <li>✓ 1 teacher login</li>
+                <li>✓ Institute logo on PDF</li>
+                <li>✓ 20 questions/paper</li>
+            </ul>
+        </div>
+
+        <!-- Growth -->
+        <div style="border:2px solid #667eea; border-radius:16px; padding:24px; width:180px; text-align:center; position:relative;">
+            <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#667eea; color:white; font-size:11px; font-weight:700; padding:3px 12px; border-radius:20px;">POPULAR</div>
+            <div style="font-size:24px;">📈</div>
+            <h3 style="color:#667eea; margin:8px 0;">Growth</h3>
+            <div style="font-size:28px; font-weight:700; color:#2d3748;">₹699</div>
+            <div style="font-size:12px; color:#718096; margin:4px 0 16px;">/month</div>
+            <ul style="list-style:none; font-size:13px; color:#4a5568; text-align:left; line-height:2;">
+                <li>✓ 50 papers/day</li>
+                <li>✓ 3 teacher logins</li>
+                <li>✓ Branded PDF</li>
+                <li>✓ Priority support</li>
+            </ul>
+        </div>
+
+        <!-- Bulk -->
+        <div style="border:2px solid #764ba2; border-radius:16px; padding:24px; width:180px; text-align:center;">
+            <div style="font-size:24px;">💼</div>
+            <h3 style="color:#764ba2; margin:8px 0;">Bulk</h3>
+            <div style="font-size:28px; font-weight:700; color:#2d3748;">₹1499</div>
+            <div style="font-size:12px; color:#718096; margin:4px 0 16px;">/month</div>
+            <ul style="list-style:none; font-size:13px; color:#4a5568; text-align:left; line-height:2;">
+                <li>✓ Unlimited papers</li>
+                <li>✓ 10 teacher logins</li>
+                <li>✓ Branded PDF</li>
+                <li>✓ Dedicated support</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ========== SCHOOL PRICING ========== -->
+    {% elif session.get('user_role') == 'school' %}
+    <h1>School Plans</h1>
+    <p class="subtitle">Designed for full school deployment across departments</p>
+
+    <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin:30px 0;">
+
+        <!-- Department -->
+        <div style="border:2px solid #e2e8f0; border-radius:16px; padding:24px; width:180px; text-align:center;">
+            <div style="font-size:24px;">🏛️</div>
+            <h3 style="color:#4a5568; margin:8px 0;">Department</h3>
+            <div style="font-size:28px; font-weight:700; color:#2d3748;">₹999</div>
+            <div style="font-size:12px; color:#718096; margin:4px 0 16px;">/month</div>
+            <ul style="list-style:none; font-size:13px; color:#4a5568; text-align:left; line-height:2;">
+                <li>✓ 50 papers/day</li>
+                <li>✓ 3 teacher logins</li>
+                <li>✓ School logo on PDF</li>
+            </ul>
+        </div>
+
+        <!-- Full School -->
+        <div style="border:2px solid #667eea; border-radius:16px; padding:24px; width:180px; text-align:center; position:relative;">
+            <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#667eea; color:white; font-size:11px; font-weight:700; padding:3px 12px; border-radius:20px;">BEST VALUE</div>
+            <div style="font-size:24px;">🏫</div>
+            <h3 style="color:#667eea; margin:8px 0;">Full School</h3>
+            <div style="font-size:28px; font-weight:700; color:#2d3748;">₹2499</div>
+            <div style="font-size:12px; color:#718096; margin:4px 0 16px;">/month</div>
+            <ul style="list-style:none; font-size:13px; color:#4a5568; text-align:left; line-height:2;">
+                <li>✓ Unlimited papers</li>
+                <li>✓ 10 teacher logins</li>
+                <li>✓ Custom branding</li>
+                <li>✓ Admin dashboard</li>
+            </ul>
+        </div>
+
+        <!-- Enterprise -->
+        <div style="border:2px solid #764ba2; border-radius:16px; padding:24px; width:180px; text-align:center;">
+            <div style="font-size:24px;">🏢</div>
+            <h3 style="color:#764ba2; margin:8px 0;">Enterprise</h3>
+            <div style="font-size:28px; font-weight:700; color:#2d3748;">Custom</div>
+            <div style="font-size:12px; color:#718096; margin:4px 0 16px;">pricing</div>
+            <ul style="list-style:none; font-size:13px; color:#4a5568; text-align:left; line-height:2;">
+                <li>✓ Multi-branch</li>
+                <li>✓ Unlimited logins</li>
+                <li>✓ API access</li>
+                <li>✓ SLA support</li>
+            </ul>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <!-- ========== COMMON PAYMENT BOX (all roles) ========== -->
+    <div class="contact-box">
+        <h3>💳 Scan & Pay via UPI</h3>
+        <p style="font-size:14px; opacity:0.9; margin-bottom:15px;">
+            GPay, PhonePe, Paytm — any UPI app works
+        </p>
+        <img src="{{ url_for('static', filename='qr_code.jpeg') }}"
+             alt="UPI QR Code"
+             style="width:210px; height:210px; border-radius:12px; background:white; padding:10px; margin-bottom:15px; display:block; margin-left:auto; margin-right:auto;">
+        <p style="font-size:14px; opacity:0.9; margin-bottom:15px;">
+            UPI ID: <strong>8225989020@ibl</strong>
+        </p>
+        <p style="font-size:13px; opacity:0.85; margin-bottom:10px;">
+            After payment → send screenshot on WhatsApp 👇
+        </p>
+        <div class="contact-methods">
+            <a href="https://wa.me/918225989020?text=Hi!%20I%20paid%20for%20QGurukul%20Premium.%20Sending%20screenshot!"
+               class="contact-btn" target="_blank">
+                📱 WhatsApp Screenshot
+            </a>
+            <a href="mailto:26harshthakur@gmail.com?subject=QGurukul%20Upgrade"
+               class="contact-btn">
+                📧 Email Us
+            </a>
+        </div>
+    </div>
+
+    <div class="back-link">
+        <a href="/home">← Back to QGurukul</a>
+    </div>
+</div>
         <div>
             <span class="price-amount">₹300</span>
             <span class="price-period">/month</span>

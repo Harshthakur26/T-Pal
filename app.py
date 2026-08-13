@@ -118,25 +118,35 @@ def check_user_limit(email):
         user['daily_count'] = 0
         user['daily_reset'] = (now + timedelta(days=1)).isoformat()
     
-    # ========== NEW: Different limits for FREE vs PREMIUM ==========
+    # ========== ROLE-AWARE RATE LIMITING ==========
     is_premium = user.get('is_premium', False)
-    is_super_premium = user.get('is_super_premium', False)  # ← ADD THIS LINE FOR SUPER PREMIUM CHECK
-    
-    if is_super_premium:
-        # SUPER PREMIUM USERS: 5 papers/hour, 20 papers/day
-        hourly_limit = REQUESTS_PER_HOUR_FOR_SUPER_PREMIUM
-        daily_limit = REQUESTS_PER_DAY_FOR_SUPER_PREMIUM
-    elif is_premium:
-        # PREMIUM USERS: 2 papers/hour, 5 papers/day
-        hourly_limit = REQUESTS_PER_HOUR_FOR_PREMIUM
-        daily_limit = REQUESTS_PER_DAY_FOR_PREMIUM
+    is_super_premium = user.get('is_super_premium', False)
+    role = user.get('role', 'student')  # ← get role from Supabase user record
+
+    if role in ('coaching', 'school'):
+        if is_super_premium:
+            hourly_limit = 20
+            daily_limit = 50
+        elif is_premium:
+            hourly_limit = 10
+            daily_limit = 20
+        else:
+            hourly_limit = 2   # coaching/school free → 2/day
+            daily_limit = 2
     else:
-        # FREE USERS: 1 paper/hour, 1 paper/day
-        hourly_limit = REQUESTS_PER_HOUR_FOR_FREE
-        daily_limit = REQUESTS_PER_DAY_FOR_FREE
-    
+        # student (default)
+        if is_super_premium:
+            hourly_limit = REQUESTS_PER_HOUR_FOR_SUPER_PREMIUM
+            daily_limit = REQUESTS_PER_DAY_FOR_SUPER_PREMIUM
+        elif is_premium:
+            hourly_limit = REQUESTS_PER_HOUR_FOR_PREMIUM
+            daily_limit = REQUESTS_PER_DAY_FOR_PREMIUM
+        else:
+            hourly_limit = REQUESTS_PER_HOUR_FOR_FREE
+            daily_limit = REQUESTS_PER_DAY_FOR_FREE
+
     tier_name = "Super Premium" if is_super_premium else "Premium" if is_premium else "Free"
-    # ========== END DIFFERENT LIMITS ==========
+    # ========== END ROLE-AWARE RATE LIMITING ==========
     
     # Check limits
     if user['hourly_count'] >= hourly_limit:
