@@ -365,10 +365,10 @@
     <a href="/logout" style="color: #f6e05e; text-decoration: none; font-weight: 600;">Logout</a>
 </div>
 {% endif %}
-{% if session.get('user_role') == 'school' %}
+{% if session.get('user_role') == 'coaching' %}
 <div style="text-align:right; max-width:900px; margin:0 auto 10px; padding:0 10px;">
     <span style="background:rgba(255,255,255,0.2); color:white; padding:5px 14px; border-radius:20px; font-size:13px;">
-        🏫 School / Teacher Mode
+        🏫 Coaching Mode
     </span>
 </div>
 {% else %}

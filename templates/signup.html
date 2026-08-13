@@ -206,17 +206,34 @@
 
 <div class="signup-container">
     <div class="logo">📚</div>
-    <h1>Join Qgurukul</h1>
-    <p class="subtitle">Get unlimited access to AI-powered question papers</p>
+    <h1><h1>{% if role == 'coaching' %}🏫 Join as Institute{% else %}🎓 Join as Student{% endif %}</h1></h1>
+    <p class="subtitle">
+    {% if role == 'coaching' %}
+        Create branded question papers for your coaching institute
+    {% else %}
+        Practice smarter with AI-generated question papers
+    {% endif %}
+    </p>
     
+    <!-- CURRENT benefits-box → REPLACE ENTIRE DIV WITH: -->
     <div class="benefits-box">
-        <h3>✨ Free Membership Benefits:</h3>
+    {% if role == 'coaching' %}
+        <h3>🏫 Coaching Institute Benefits:</h3>
         <ul>
-            <li>1 question papers per hour</li>
-            <li>2 question papers per day</li>
-            <li>All subjects & classes (6-12)</li>
-            <li>MCQ, Short, Long & Numerical questions</li>
+            <li>2 free papers/day to try</li>
+            <li>All subjects & Classes 6–12</li>
+            <li>Upgrade for institute branding on PDFs</li>
+            <li>Bulk paper generation for all batches</li>
         </ul>
+    {% else %}
+        <h3>🎓 Student Benefits:</h3>
+        <ul>
+            <li>1 free practice paper/day</li>
+            <li>All NCERT subjects & classes</li>
+            <li>MCQ, Short, Long & Numerical questions</li>
+            <li>Upgrade for unlimited practice</li>
+        </ul>
+    {% endif %}
     </div>
     
     {% if error %}
@@ -248,10 +265,44 @@
             <span class="help-text">Use this email to login anytime</span>
         </div>
         
+        <!-- REPLACE THE OLD 'You Teach Class' section with this role-based block -->
+        <!-- If the current user role is 'coaching', show institute-specific fields. -->
+        <!-- Otherwise, show the normal student class selector. -->
+        {% if role == 'coaching' %}
         <div class="form-group">
-            <label><span class="icon">🎓</span> You Teach Class</label>
+            <label><span class="icon">🏫</span> Institute Name</label>
+            <input type="text" name="institute_name" 
+                   placeholder="e.g., Sharma Classes, Excel Academy" required>
+        </div>
+
+        <div class="form-group">
+            <label><span class="icon">👤</span> Contact Person Name</label>
+            <input type="text" name="name" 
+                   placeholder="Owner / Director name" required autofocus>
+        </div>
+
+        <div class="form-group">
+            <label><span class="icon">🏙️</span> City</label>
+            <input type="text" name="city" 
+                   placeholder="e.g., Bhopal, Indore, Delhi" required>
+        </div>
+
+        <div class="form-group">
+            <label><span class="icon">📚</span> Classes You Teach</label>
             <select name="class_num" required>
-                <option value="">-- Select Class --</option>
+                <option value="">-- Select --</option>
+                <option value="6-8">Classes 6 to 8</option>
+                <option value="9-10">Classes 9 to 10</option>
+                <option value="11-12">Classes 11 to 12</option>
+                <option value="6-12">All Classes (6 to 12)</option>
+            </select>
+        </div>
+
+        {% else %}
+        <div class="form-group">
+            <label><span class="icon">🎓</span> Your Class</label>
+            <select name="class_num" required>
+                <option value="">-- Select Your Class --</option>
                 <option value="6">Class 6</option>
                 <option value="7">Class 7</option>
                 <option value="8">Class 8</option>
@@ -259,12 +310,12 @@
                 <option value="10">Class 10</option>
                 <option value="11">Class 11</option>
                 <option value="12">Class 12</option>
-                <option value="Multiple">Multiple Classes</option>
             </select>
         </div>
+        {% endif %}
         
         <button type="submit" class="btn-signup">
-            🚀 Start Generating Papers
+            🚀 {% if role == 'coaching' %}🏫 Register My Institute{% else %}🚀 Start Practicing{% endif %}
         </button>
     </form>
     
