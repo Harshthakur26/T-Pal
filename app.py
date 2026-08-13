@@ -199,7 +199,7 @@ def check_anonymous_limit(ip_address):
 @app.route('/')
 def landing():
     if session.get('user_email'):
-        return redirect('/home')  # logged in → skip landing
+        return redirect(url_for('/home'))  # logged in → skip landing
     return render_template('landing.html')
 
 # ==================== HOME ROUTE ====================
