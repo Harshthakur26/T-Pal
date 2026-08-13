@@ -85,10 +85,10 @@ def update_user(email, updates):
 # CHANGE 2: Update check_user_limit() Function
 # (Adapted for Supabase instead of PostgreSQL/JSON)
 # ============================================
-REQUESTS_PER_HOUR_FOR_PREMIUM = 2  # Premium tier: 2 papers per hour per IP
-REQUESTS_PER_DAY_FOR_PREMIUM = 5  # Premium tier: 5 papers per day per IP
 REQUESTS_PER_HOUR_FOR_FREE = 1  # Free tier: 1 paper per hour per IP
 REQUESTS_PER_DAY_FOR_FREE = 1  # Free tier: 1 paper per day per IP
+REQUESTS_PER_HOUR_FOR_PREMIUM = 2  # Premium tier: 2 papers per hour per IP
+REQUESTS_PER_DAY_FOR_PREMIUM = 5  # Premium tier: 5 papers per day per IP
 REQUESTS_PER_HOUR_FOR_SUPER_PREMIUM = 5
 REQUESTS_PER_DAY_FOR_SUPER_PREMIUM = 20
 
@@ -123,18 +123,30 @@ def check_user_limit(email):
     is_super_premium = user.get('is_super_premium', False)
     role = user.get('role', 'student')  # ← get role from Supabase user record
 
-    if role in ('coaching', 'school'):
+    if role == 'coaching':
         if is_super_premium:
-            hourly_limit = 20
+            hourly_limit = 10
             daily_limit = 50
         elif is_premium:
-            hourly_limit = 10
+            hourly_limit = 5
             daily_limit = 20
         else:
-            hourly_limit = 2   # coaching/school free → 2/day
-            daily_limit = 2
+            hourly_limit = 1
+            daily_limit = 2    # coaching free → 2/day
+
+    elif role == 'school':
+        if is_super_premium:
+            hourly_limit = 20
+            daily_limit = 200  # school bulk → near unlimited
+        elif is_premium:
+            hourly_limit = 10
+            daily_limit = 50   # school department plan
+        else:
+            hourly_limit = 1
+            daily_limit = 3    # school free → 3/day
+
     else:
-        # student (default)
+        # student
         if is_super_premium:
             hourly_limit = REQUESTS_PER_HOUR_FOR_SUPER_PREMIUM
             daily_limit = REQUESTS_PER_DAY_FOR_SUPER_PREMIUM
