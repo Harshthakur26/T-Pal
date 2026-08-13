@@ -206,10 +206,12 @@
 
 <div class="signup-container">
     <div class="logo">📚</div>
-    <h1><h1>{% if role == 'coaching' %}🏫 Join as Institute{% else %}🎓 Join as Student{% endif %}</h1></h1>
+    <h1><h1>{% if role == 'coaching' %}🏯 Join as Institute {% elif role == 'School' %}🏫 Join as School {% else %}🎓 Join as Student{% endif %}</h1></h1>
     <p class="subtitle">
     {% if role == 'coaching' %}
         Create branded question papers for your coaching institute
+    {% elif role == 'School' %}
+        Create branded question papers for your school
     {% else %}
         Practice smarter with AI-generated question papers
     {% endif %}
@@ -223,6 +225,14 @@
             <li>2 free papers/day to try</li>
             <li>All subjects & Classes 6–12</li>
             <li>Upgrade for institute branding on PDFs</li>
+            <li>Bulk paper generation for all batches</li>
+        </ul>
+    {% elif role == 'School' %}
+        <h3>🏫 School Benefits:</h3>
+        <ul>
+            <li>2 free papers/day to try</li>
+            <li>All subjects & Classes 6–12</li>
+            <li>Upgrade for school branding on PDFs</li>
             <li>Bulk paper generation for all batches</li>
         </ul>
     {% else %}
