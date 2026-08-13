@@ -207,7 +207,7 @@ def landing():
 # It retrieves user info from the session if they're logged in
 # and renders the main question generator interface
 # @app.route("/") - maps this function to the root path of the app
-@app.route("/")
+@app.route("/home")
 def home():
     """Homepage - main question generator"""
     # Get the user's name from session (None if not logged in)
