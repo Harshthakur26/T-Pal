@@ -347,7 +347,7 @@
         {% endif %}
         
         <button type="submit" class="btn-signup">
-            🚀 {% if role == 'coaching' %}🏫 Register My Institute{% else %}🚀 Start Practicing{% endif %}
+            🚀 {% if role == 'coaching' %}🏫 Register My Institute {% elif role == 'School' %}🏫 Register My School {% else %}🚀 Start Practicing{% endif %}
         </button>
     </form>
     
