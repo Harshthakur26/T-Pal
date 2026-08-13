@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>T-PAL - Signup</title>
+    <title>Qgurukul - Signup</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -206,7 +206,7 @@
 
 <div class="signup-container">
     <div class="logo">📚</div>
-    <h1>Join T-PAL</h1>
+    <h1>Join Qgurukul</h1>
     <p class="subtitle">Get unlimited access to AI-powered question papers</p>
     
     <div class="benefits-box">
@@ -226,6 +226,10 @@
     {% endif %}
     
     <form method="POST" action="/signup">
+        <!-- Hidden field to pass the selected user role to the Flask backend when the form is submitted -->
+        <!-- This value is populated from the template context (for example: 'teacher', 'student', etc.) -->
+        <input type="hidden" name="role" value="{{ role }}">
+
         <div class="form-group">
             <label><span class="icon">👤</span> Full Name</label>
             <input type="text" name="name" placeholder="e.g., Sharma Sir" required autofocus>

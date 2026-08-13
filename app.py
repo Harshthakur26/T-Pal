@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import io
 import os
 
+
 app = Flask(__name__, template_folder='templates')
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
@@ -193,6 +194,13 @@ def check_anonymous_limit(ip_address):
         return False, "🔒 Free paper used! Please signup to continue."
     
     return True, "✅ Free paper available (1/1)"
+# New landing page for students who are not logged in. If they are logged in, redirect to /home.
+
+@app.route('/')
+def landing():
+    if session.get('user_email'):
+        return redirect('/home')  # logged in → skip landing
+    return render_template('landing.html')
 
 # ==================== HOME ROUTE ====================
 # This route handles the homepage (root URL "/")
@@ -220,12 +228,14 @@ def home():
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
     """Signup page for new users"""
+    role = request.args.get('role', 'student')
     if request.method == 'POST':
         # Get form data
         name = request.form.get('name', '').strip()
         mobile = request.form.get('mobile', '').strip()
         email = request.form.get('email', '').strip()
         class_num = request.form.get('class_num', '').strip()
+        role = request.form.get('role', 'student')
         
         # Validate required fields
         if not all([name, mobile, email, class_num]):
@@ -254,6 +264,7 @@ def signup():
             # CHANGE 4: Load Premium Status Into Session
             # ============================================
             session['user_premium'] = existing_user.get('is_premium', False)  # ← ADD THIS LINE
+            session['user_role'] = existing_user.get('role', 'student')
             print(f"✅ Returning user logged in: {existing_user['name']} ({email})")
             return redirect(url_for('home'))
         
@@ -271,6 +282,7 @@ def signup():
             # CHANGE 3: Update Signup to Add is_premium Field
             # ============================================
             'is_premium': False,  # ← ADD THIS LINE (new users start as FREE)
+            'role': role,
             "created_at": now.isoformat(),
             "hourly_count": 0,
             "hourly_reset": (now + timedelta(hours=1)).isoformat(),
@@ -291,12 +303,13 @@ def signup():
         # CHANGE 4: Load Premium Status Into Session
         # ============================================
         session['user_premium'] = False  # ← ADD THIS LINE (new users are FREE)
+        session['user_role'] = role
         
         print(f"✅ New user created and logged in: {name} ({email})")
         return redirect(url_for('home'))
     
     # GET request - show signup form
-    return render_template("signup.html")
+    return render_template("signup.html", role=role)
 
 @app.route("/logout")
 def logout():

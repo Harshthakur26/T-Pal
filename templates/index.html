@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>QGurukul – AI Question Paper Generator for Classes 6–12</title>
+    <title>QGurukul – AI Practice Companion for Students</title>
     <meta charset="UTF-8">
-    <meta name="description" content="Generate NCERT-aligned question papers for Classes 6–12 instantly. Perfect for students, teachers, and coaching institutes across India.">
-    <meta name="keywords" content="question paper generator India, NCERT question paper, coaching institute software, student practice paper, AI exam paper maker, Class 6 to 12 question paper, self study question paper">
+    <meta name="description" content="QGurukul is your AI-powered practice companion. Generate custom question papers, practice chapter-wise, and get instant feedback — for Classes 6–12, graduation & beyond.">
+<meta name="keywords" content="AI practice companion India, NCERT question paper generator, student exam preparation, chapter wise practice test, AI tutor India, self study tool, Class 6 to 12 practice, BCA BBA BCom exam prep">
     <meta name="author" content="QGurukul">
     <link rel="canonical" href="https://www.qgurukul.com/">
 
     
     <!-- WhatsApp / LinkedIn preview when you share the link -->
-    <meta property="og:title" content="QGurukul – AI Question Paper Generator">
-    <meta property="og:description" content="Generate NCERT-aligned question papers for Classes 6–12 instantly. Perfect for students, teachers, and coaching institutes.">
+    <meta property="og:title" content="QGurukul – AI Practice Companion for Students">
+    <meta property="og:description" content="Generate stream aligned question papers for Classes 6–12, College grads nd competetive exams. Perfect for students, teachers, and coaching institutes.">
     <meta property="og:url" content="https://www.qgurukul.com">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://www.qgurukul.com/static/og-preview.png">
@@ -365,6 +365,19 @@
     <a href="/logout" style="color: #f6e05e; text-decoration: none; font-weight: 600;">Logout</a>
 </div>
 {% endif %}
+{% if session.get('user_role') == 'school' %}
+<div style="text-align:right; max-width:900px; margin:0 auto 10px; padding:0 10px;">
+    <span style="background:rgba(255,255,255,0.2); color:white; padding:5px 14px; border-radius:20px; font-size:13px;">
+        🏫 School / Teacher Mode
+    </span>
+</div>
+{% else %}
+<div style="text-align:right; max-width:900px; margin:0 auto 10px; padding:0 10px;">
+    <span style="background:rgba(255,255,255,0.2); color:white; padding:5px 14px; border-radius:20px; font-size:13px;">
+        🎓 Student Mode
+    </span>
+</div>
+{% endif %}
 
 <div class="container">
     <div class="card">
@@ -515,6 +528,18 @@
     {% endif %}
     {% endfor %}
 </div>
+
+        {% if session.get('user_role') == 'school' %}
+        <div style="background:#faf0ff; border-radius:10px; padding:12px 16px; margin-top:15px; font-size:13px; color:#6b3fa0; border-left:4px solid #764ba2;">
+            🏫 <strong>School Feature:</strong> Add your institute logo & name to this paper —
+            <a href="/upgrade" style="color:#764ba2; font-weight:700;">Upgrade to Premium</a>
+        </div>
+        {% else %}
+        <div style="background:#e6fffa; border-radius:10px; padding:12px 16px; margin-top:15px; font-size:13px; color:#2c7a7b; border-left:4px solid #48bb78;">
+            🎓 <strong>Practice Tip:</strong> Hide answers, attempt questions, then reveal to check yourself!
+        </div>
+        {% endif %}
+
         <div style="text-align:center; margin-top:15px;">
             <button onclick="toggleAnswers()" id="toggleBtn"
                 style="background:#667eea; color:white; padding:10px 25px; 
