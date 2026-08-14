@@ -219,10 +219,9 @@ def check_anonymous_limit(ip_address):
 # New landing page for students who are not logged in. If they are logged in, redirect to /home.
 
 @app.route('/')
+@app.route('/')
 def landing():
-    if session.get('user_email'):
-        return redirect(url_for('home'))  # logged in → skip landing
-    return render_template('landing.html')
+    return redirect(url_for('home'))
 
 # ==================== HOME ROUTE ====================
 # This route handles the homepage (root URL "/")
