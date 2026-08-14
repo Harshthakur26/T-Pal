@@ -459,9 +459,9 @@
                 
                 <!-- Show upgrade message for free users -->
                 {% if not session.get('user_premium') %}
-                <p style="font-size: 12px; color: #718096; margin-top: 8px;">
-                    💎 Want more questions? <a href="/upgrade" style="color: #667eea; text-decoration: underline; font-weight: 600;">Upgrade to Premium</a> (₹300/month)
-                </p>
+                <div style="margin-top: 6px; font-size: 12px; color: #718096;">
+                    💡 Upgrade to premium for more questions and features.
+                    <a href="/upgrade" style="color: #667eea; font-weight: 600;">Upgrade Now</a>
                 {% endif %}
             </div>
                 
@@ -999,7 +999,7 @@ const numericalOption = questionTypeSelect.querySelector('option[value="Numerica
 // CODE ADDED: Function to toggle Numerical option visibility
 // Numerical problems should only be available for Mathematics subject
 function toggleNumericalOption() {
-    if (subjectSelect.value === 'Mathematics') {
+    if (subjectSelect.value === 'Mathematics' || subjectSelect.value === 'Physics' || subjectSelect.value === 'Chemistry') {
         // CODE ADDED: Show the Numerical option when Mathematics is selected
         numericalOption.style.display = 'block';
         // CODE ADDED: If currently hidden and not selected, fine. If hidden and selected, switch to Mixed.

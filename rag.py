@@ -505,87 +505,176 @@ IMPORTANT:
 - Do NOT ask theoretical questions like "What is an equation?"
 - Do NOT create MCQs
 - Focus on SOLVING and CALCULATING"""
-            elif subject.lower() in ["science", "physics", "chemistry"]:
-                  format_instruction = f"""Generate ONLY NUMERICAL PROBLEMS for {subject} in this EXACT format:
+            elif subject.lower() == "physics":
+                format_instruction = f"""Generate ONLY NUMERICAL PROBLEMS for Class {class_num} Physics, Chapter: "{chapter}".
 
-Q1. Calculate: [Numerical problem related to {subject} concept]
+FORMAT:
+Q1. Calculate: [Physics numerical with specific values]
 Answer:
-Step 1: [Formula or equation setup]
-Step 2: [Substitution of values]
-Step 3: [Calculation with proper units]
-Final Answer: [Numerical result with appropriate units]
-
-Q2. Solve: [Another {subject} numerical problem]
-Answer:
-Step 1: [Setup]
+Given: [list given values]
+Formula: [relevant formula e.g. F = ma]
+Step 1: [Substitution]
 Step 2: [Calculation]
-Final Answer: [Result with units]
+Final Answer: [Result with SI units]
 
-EXAMPLES FOR {subject}:
-- Calculate the force when mass is 10 kg and acceleration is 5 m/s² (F = ma = 10 × 5 = 50 N)
-- Find the pressure when force 100 N is applied on area 2 m² (P = F/A = 100/2 = 50 Pa)
-- Calculate the current when voltage is 12 V and resistance is 4 Ω (I = V/R = 12/4 = 3 A)
-- Find the number of moles in 18 g of water (Molar mass 18 g/mol, moles = 18/18 = 1 mol)
+PHYSICS FORMULA BANK (use only what is relevant to "{chapter}"):
+- Mechanics: F = ma, v = u + at, s = ut + ½at², KE = ½mv², PE = mgh, p = mv
+- Work & Energy: W = Fs cosθ, Power = W/t, efficiency = output/input × 100
+- Electricity: V = IR, P = VI = I²R = V²/R, Q = It
+- Waves & Sound: v = fλ, Speed of sound = 340 m/s at room temp
+- Light: 1/f = 1/v - 1/u, magnification = v/u
+- Gravitation: F = Gm₁m₂/r², g = 9.8 m/s²
+- Pressure: P = F/A, P = ρgh
 
 IMPORTANT:
-- EVERY question must have NUMBERS and require CALCULATIONS
-- Use appropriate SI units (m, kg, s, N, J, W, A, V, Ω, mol, etc.)
-- Show step-by-step working with formulas clearly stated
-- Include units in final answers
-- Do NOT ask theoretical or definition-based questions
-- Do NOT create MCQs with A/B/C/D options"""
+- State the formula BEFORE substituting values
+- Use correct SI units throughout (m, kg, s, N, J, W, A, V, Ω, Pa, etc.)
+- Questions must match Class {class_num} level — do not use Class 11/12 concepts for Class 9/10
+- Show all steps clearly
+- Do NOT create MCQs or theoretical questions"""
 
-            else:  # Science
-                format_instruction = f"""Generate ONLY NUMERICAL PROBLEMS for {subject} in this EXACT format:
+            elif subject.lower() == "chemistry":
+                format_instruction = f"""Generate ONLY NUMERICAL PROBLEMS for Class {class_num} Chemistry, Chapter: "{chapter}".
 
-Q1. Calculate: [Numerical problem with specific values]
+FORMAT:
+Q1. Calculate: [Chemistry numerical with specific values]
 Answer:
-Step 1: [Formula]
-Step 2: [Calculation]
+Given: [list given values]
+Formula: [relevant formula]
+Step 1: [Setup and substitution]
+Step 2: [Calculation with units]
 Final Answer: [Result with units]
 
+CHEMISTRY FORMULA BANK (use only what is relevant to "{chapter}"):
+- Mole Concept: moles = mass/molar mass, moles = volume(L)/22.4 (at STP)
+- Concentration: Molarity = moles/volume(L), mass% = (mass of solute/mass of solution) × 100
+- Gas Laws: PV = nRT, P₁V₁/T₁ = P₂V₂/T₂ (combined gas law)
+- Empirical Formula: find ratio of moles from % composition
+- pH: pH = -log[H⁺], [H⁺][OH⁻] = 10⁻¹⁴
+- Electrochemistry: charge = current × time (Q = It)
+- Basic: density = mass/volume, % yield = (actual/theoretical) × 100
+
 IMPORTANT:
-- Include numbers and calculations
+- Show the formula used before calculating
+- Include units at every step
+- Questions must match Class {class_num} level exactly
+- Do NOT create MCQs or definition questions"""
+
+            elif subject.lower() == "biology":
+                format_instruction = f"""Generate NUMERICAL or DATA-BASED PROBLEMS for Class {class_num} Biology, Chapter: "{chapter}".
+
+Note: Biology has fewer pure numericals. Focus on:
+- Genetics: Punnett square probability problems
+- Ecology: population, percentage calculations
+- Physiology: ratio and proportion problems
+- Statistics: data interpretation from given values
+
+FORMAT:
+Q1. [Data-based or probability problem]
+Answer:
+Step 1: [Setup or Punnett square]
+Step 2: [Calculation or ratio]
+Final Answer: [Result with explanation]
+
+EXAMPLES relevant to Biology:
+- In a monohybrid cross Tt × Tt, what percentage of offspring will be tall? (Answer: 75%)
+- If breathing rate is 15 breaths/min and tidal volume is 500 mL, find minute ventilation
+- A population has 400 individuals. After 2 years it becomes 600. Find growth rate %
+- In a food chain, if 10,000 J energy is at producer level, how much reaches secondary consumer? (10% law)
+
+IMPORTANT:
+- Show working clearly even for simple probability
+- Do NOT create MCQs
+- If chapter has no suitable numericals, generate data interpretation questions instead"""
+
+            elif subject.lower() == "science":
+                format_instruction = f"""Generate ONLY NUMERICAL PROBLEMS for Class {class_num} Science, Chapter: "{chapter}".
+
+FORMAT:
+Q1. Calculate: [Science numerical with specific values]
+Answer:
+Given: [list given values with units]
+Formula: [relevant formula]
+Step 1: [Substitution]
+Step 2: [Calculation]
+Final Answer: [Result with SI units]
+
+IMPORTANT:
+- State formula before substituting values
+- Use correct SI units
 - Show step-by-step working
-- Include units in answers
-- Do NOT create MCQs"""
+- Do NOT create MCQs or theoretical questions"""
         
         else:  # Mixed
-            system_message = "You are an expert NCERT question paper creator. You create a mix of MCQs, short answer, and long answer questions."
-            
-            format_instruction = """Generate a MIX of question types:
-- Some MCQs (with A/B/C/D options and Answer: X)
-- Some Short Answer (brief 1-2 sentence answers)
-- Some Long Answer (detailed 3-5 sentence answers)
+            system_message = """You are an expert NCERT question paper creator. You create a structured mix of MCQs, short answer, and long answer questions.
 
-Format examples shown above."""
+CRITICAL RULES:
+1. Follow the EXACT ratio given below — no more, no less of each type
+2. MCQs MUST have A/B/C/D options and Answer: X
+3. Short Answer must be 1-2 sentences only
+4. Long Answer must be 3-5 sentences or step-by-step
+5. Number questions sequentially Q1, Q2, Q3... across all types"""
+
+            mcq_count = round(int(num_questions) * 0.4)
+            short_count = round(int(num_questions) * 0.4)
+            long_count = int(num_questions) - mcq_count - short_count
+
+            format_instruction = f"""Generate EXACTLY {num_questions} questions in this STRICT ratio:
+- {mcq_count} MCQs (with A/B/C/D options and Answer: X)
+- {short_count} Short Answer (1-2 sentence answers, no options)
+- {long_count} Long Answer (3-5 sentence detailed answers)
+
+FORMAT:
+Q1. [MCQ question]
+A) [option]
+B) [option]
+C) [option]
+D) [option]
+Answer: [A/B/C/D]
+
+Q{mcq_count+1}. [Short answer question]
+Answer: [1-2 sentence answer]
+
+Q{mcq_count+short_count+1}. [Long answer question]
+Answer: [3-5 sentence detailed answer]
+
+IMPORTANT: Follow the ratio EXACTLY. Do not create more or fewer of any type."""
         
-        # Create main prompt with STRICT subject reinforcement
-        prompt = f"""You are creating a Class {class_num} {subject} question paper on "{chapter}".
+        # Difficulty mapping — precise per class level
+        difficulty_map = {
+            "Easy": f"Direct recall of facts or definitions from the textbook. A Class {class_num} student should answer in under 30 seconds without extra thinking.",
+            "Medium": f"Requires understanding and application of a concept, not just memory. A Class {class_num} student needs to think before answering.",
+            "Hard": f"Multi-step reasoning, cross-concept application, or calculation. Challenging even for a top-performing Class {class_num} student."
+        }
+        difficulty_description = difficulty_map.get(difficulty, f"Appropriate for Class {class_num} level")
 
-CRITICAL: This is for {subject} ONLY. Do NOT include questions from other subjects.
+        # Create main prompt with STRICT subject reinforcement
+        prompt = f"""You are creating a Class {class_num} {subject} question paper on the chapter "{chapter}".
+
+CRITICAL: This is STRICTLY for {subject}, Class {class_num}, Chapter: "{chapter}" ONLY.
+Do NOT include questions from other subjects, other chapters, or other classes.
 
 Use this NCERT {subject} content as reference:
-
 {relevant_context}
 
 TASK:
-Generate EXACTLY {num_questions} {subject} questions at {difficulty} difficulty level.
+Generate EXACTLY {num_questions} {subject} questions.
 
 {format_instruction}
 
+DIFFICULTY: {difficulty}
+Definition: {difficulty_description}
+Every question MUST match this difficulty level exactly.
+
 QUALITY REQUIREMENTS:
-1. Questions must be based STRICTLY on {subject} content (NOT other subjects!)
-2. Questions must be from the chapter "{chapter}" in Class {class_num} {subject}
-3. Difficulty level: {difficulty} - adjust complexity accordingly
-4. Questions should test understanding, not just memory
-5. Use proper terminology from NCERT {subject} textbooks
-6. Make questions clear and unambiguous
-7. Ensure answers are accurate based on NCERT content
+1. Questions must come ONLY from Chapter "{chapter}" of Class {class_num} {subject}
+2. Do NOT include content from adjacent chapters or other subjects
+3. Use exact NCERT terminology — no paraphrasing of technical terms
+4. Every answer must be factually correct as per NCERT
+5. Questions must test the difficulty level described above — not easier, not harder
+6. Make questions unambiguous — only one clearly correct answer per question
 
-IMPORTANT: Only create {subject} questions. Do not mix with other subjects!
-
-Generate the {num_questions} {subject} questions with answers now:"""
+Generate the {num_questions} questions now:"""
 
         print(f"🤖 Sending request to Groq API...")
         print(f"   Model: llama-3.3-70b-versatile")
@@ -606,7 +695,7 @@ Generate the {num_questions} {subject} questions with answers now:"""
                 }
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.8,
+            temperature=0.3,
             max_tokens=2500,
             top_p=0.9,
             stream=False
