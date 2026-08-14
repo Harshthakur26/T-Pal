@@ -507,15 +507,16 @@
         
         <div class="output-header">
             <h2><span class="emoji-icon">📝</span> Generated Questions</h2>
-            <form method="POST" action="/download">
-                <input type="hidden" name="questions" value="{{ questions }}">
-                <input type="hidden" name="subject" value="{{ subject }}">
-                <input type="hidden" name="class_num" value="{{ class_num }}">
-                <input type="hidden" name="chapter" value="{{ chapter }}">
-                <button type="submit" class="btn-download">
-                    ⬇ Download PDF
-                </button>
-            </form>
+            <form method="POST" action="/download" id="downloadForm">
+            <input type="hidden" name="questions" value="{{ questions }}">
+            <input type="hidden" name="subject" value="{{ subject }}">
+            <input type="hidden" name="class_num" value="{{ class_num }}">
+            <input type="hidden" name="chapter" value="{{ chapter }}">
+        </form>
+        <button class="btn-download" onclick="handleDownload()">
+            ⬇ Download PDF
+        </button>
+        </form>
         </div>
         <div class="questions-box" id="questionsBox">
     {% for line in questions.split('\n') %}
@@ -1137,6 +1138,49 @@ of the page. These links help satisfy legal requirements and build user trust.
     <!-- Privacy Policy link - navigates to /privacy route -->
     <a href="/privacy" style="color:rgba(255,255,255,0.8); margin:0 10px;">Privacy Policy</a>
 </div>
+
+<!-- SIGNUP MODAL — shown to anonymous users who click Download -->
+<div id="signupModal" style="display:none; position:fixed; top:0; left:0; 
+     width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:1000; 
+     align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:20px; padding:40px; 
+                max-width:400px; width:90%; text-align:center; position:relative;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+        <button onclick="closeModal()" style="position:absolute; top:15px; right:20px; 
+                background:none; border:none; font-size:22px; cursor:pointer; color:#718096;">✕</button>
+        <div style="font-size:52px; margin-bottom:12px;">🎉</div>
+        <h2 style="color:#667eea; margin-bottom:10px; font-size:22px;">Your paper is ready!</h2>
+        <p style="color:#718096; margin-bottom:25px; line-height:1.6; font-size:14px;">
+            Create a free account to download this paper.<br>
+            Get <strong>1 free paper every day</strong> — no payment needed.
+        </p>
+        <a href="/signup?role=student" style="display:block; background:linear-gradient(135deg,#667eea,#764ba2); 
+           color:white; padding:14px; border-radius:12px; text-decoration:none; 
+           font-weight:700; font-size:16px; margin-bottom:12px;">
+            🚀 Sign Up Free — Download Now
+        </a>
+        <a href="/signup" style="display:block; color:#667eea; font-size:13px; 
+           font-weight:600; text-decoration:none; margin-top:8px;">
+            Already have an account? Login →
+        </a>
+    </div>
+</div>
+
+<script>
+const isLoggedIn = {{ 'true' if session.user_name else 'false' }};
+
+function handleDownload() {
+    if (isLoggedIn) {
+        document.getElementById('downloadForm').submit();
+    } else {
+        document.getElementById('signupModal').style.display = 'flex';
+    }
+}
+
+function closeModal() {
+    document.getElementById('signupModal').style.display = 'none';
+}
+</script>
 
 </body>
 </html>

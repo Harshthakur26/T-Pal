@@ -221,7 +221,7 @@ def check_anonymous_limit(ip_address):
 @app.route('/')
 def landing():
     if session.get('user_email'):
-        return redirect(url_for('/home'))  # logged in → skip landing
+        return redirect(url_for('home'))  # logged in → skip landing
     return render_template('landing.html')
 
 # ==================== HOME ROUTE ====================
@@ -463,6 +463,8 @@ def generate():
 
 @app.route("/download", methods=["POST"])
 def download():
+    if not session.get('user_email'):
+        return "Unauthorized", 403  # safety net (modal handles it in JS)
     questions = request.form["questions"]
     subject = request.form["subject"]
     class_num = request.form["class_num"]
