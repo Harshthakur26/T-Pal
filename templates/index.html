@@ -1189,7 +1189,7 @@ function handleDownload() {
     if (isLoggedIn) {
         document.getElementById('downloadForm').submit();
     } else {
-        document.getElementById('signupModal').style.display = 'flex';
+        window.location.href = '/landing';  // redirect instead of modal
     }
 }
 

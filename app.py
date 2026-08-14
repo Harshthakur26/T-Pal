@@ -218,10 +218,9 @@ def check_anonymous_limit(ip_address):
     return True, "✅ Free paper available (1/1)"
 # New landing page for students who are not logged in. If they are logged in, redirect to /home.
 
-@app.route('/')
-@app.route('/')
+@app.route('/landing')
 def landing():
-    return redirect(url_for('home'))
+    return render_template('landing.html')
 
 # ==================== HOME ROUTE ====================
 # This route handles the homepage (root URL "/")
@@ -378,7 +377,7 @@ def generate():
             if not allowed:
                 # Redirect to signup page
                 session['redirect_after_signup'] = True
-                return redirect(url_for('home') + '?signup=1')
+                return redirect('/landing')
             
             # Mark free paper as used
             ANONYMOUS_LIMIT[ip_address]['count'] = 1
