@@ -218,8 +218,12 @@ def check_anonymous_limit(ip_address):
     return True, "✅ Free paper available (1/1)"
 # New landing page for students who are not logged in. If they are logged in, redirect to /home.
 
-@app.route('/landing')
+@app.route('/')
 def landing():
+    return redirect(url_for('home'))
+
+@app.route('/landing')
+def landing_page():
     return render_template('landing.html')
 
 # ==================== HOME ROUTE ====================
