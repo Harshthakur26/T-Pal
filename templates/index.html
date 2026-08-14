@@ -1180,6 +1180,11 @@ function handleDownload() {
 function closeModal() {
     document.getElementById('signupModal').style.display = 'none';
 }
+
+// ADD THIS — auto-opens modal if redirected after 2nd generation attempt
+if (new URLSearchParams(window.location.search).get('signup') === '1') {
+    document.getElementById('signupModal').style.display = 'flex';
+}
 </script>
 
 </body>

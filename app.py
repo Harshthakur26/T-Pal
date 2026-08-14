@@ -378,7 +378,7 @@ def generate():
             if not allowed:
                 # Redirect to signup page
                 session['redirect_after_signup'] = True
-                return redirect(url_for('signup'))
+                return redirect(url_for('home') + '?signup=1')
             
             # Mark free paper as used
             ANONYMOUS_LIMIT[ip_address]['count'] = 1
