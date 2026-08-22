@@ -677,7 +677,7 @@ QUALITY REQUIREMENTS:
 Generate the {num_questions} questions now:"""
 
         print(f"🤖 Sending request to Groq API...")
-        print(f"   Model: llama-3.3-70b-versatile")
+        print(f"   Model: openai/gpt-oss-20b")
         print(f"   Subject: {subject}")
         print(f"   Type: {question_type}")
         print(f"   Prompt length: {len(prompt)} characters")
@@ -694,7 +694,7 @@ Generate the {num_questions} questions now:"""
                     "content": prompt
                 }
             ],
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-20b",
             temperature=0.3,
             max_tokens=2500,
             top_p=0.9,
