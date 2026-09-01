@@ -716,6 +716,10 @@ def sitemap():
 def robots():
     return send_from_directory('static', 'robots.txt')
 
+# Health check endpoint for monitoring
+@app.route("/health")
+def health():
+    return "OK", 200
 # ============================================================================
 # APP ENTRY POINT
 # This runs the Flask development server when app.py is executed directly
