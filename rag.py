@@ -345,7 +345,7 @@ def validate_question_type(generated_text, expected_type):
     
     return generated_text
 
-def generate_questions(subject, class_num, chapter, num_questions, difficulty, question_type="Mixed"):
+def generate_questions(subject, class_num, chapter, num_questions, difficulty, question_type="MCQ"):
     """Generate questions using Groq API with strict type enforcement
     
     NEW: Added "Numerical" question type for math problems

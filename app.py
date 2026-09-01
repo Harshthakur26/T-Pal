@@ -402,7 +402,7 @@ def generate():
         chapter = request.form.get("chapter", "")
         num_q = request.form.get("num_questions", "10")
         difficulty = request.form.get("difficulty", "Medium")
-        question_type = request.form.get("question_type", "Mixed")
+        question_type = request.form.get("question_type", "MCQ")
         
         # ========== PREMIUM FEATURE CHECK ==========
         # Check if user is trying to use premium features (>5 questions)
