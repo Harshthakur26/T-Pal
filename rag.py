@@ -2,6 +2,7 @@ import os
 import gc  # For memory management - clear memory after loading PDFs
 from groq import Groq
 from pypdf import PdfReader
+import time
 
 def read_pdfs(folder_path="data"):
     """Read all PDF files from the data folder - FLEXIBLE VERSION
@@ -611,6 +612,60 @@ IMPORTANT:
 - Show step-by-step working
 - Do NOT create MCQs or theoretical questions"""
         
+        elif subject.lower() == "commerce":
+            format_instruction = f"""Generate ONLY NUMERICAL PROBLEMS for class {class_num} Commerce, Chapter: "{chapter}".
+
+SOURCE RESTRICTION:
+- Generate questions ONLY from the concepts, methods, formulas,
+  and information present in the retrieved NCERT context.
+- Do not introduce concepts from another chapter or higher class.
+- Do not use advanced professional-level Commerce concepts.
+
+FORMAT:
+
+Q1. [Clear Commerce numerical/problem-solving question]
+
+Answer:
+Given:
+- [Given value/information 1]
+- [Given value/information 2]
+- [Given value/information 3]
+
+Required:
+[What needs to be calculated/determined]
+
+Formula/Method:
+[Relevant formula or accounting/calculation method]
+
+Step 1:
+[Set up the calculation]
+
+Step 2:
+[Substitute values / prepare calculation]
+
+Step 3:
+[Complete the calculation]
+
+Final Answer:
+[Clear final answer with ₹, %, units, ratio, etc.]
+
+IMPORTANT:
+- Questions MUST match Class {class_num} level.
+- Questions MUST be relevant to the chapter "{chapter}".
+- Use only concepts supported by the retrieved NCERT context.
+- Use realistic values appropriate for Commerce problems.
+- Show the correct formula/method before calculation.
+- Show calculations step-by-step.
+- Maintain correct units, currency symbols, percentages and ratios.
+- Ensure the final answer is logically and mathematically correct.
+- Do NOT create MCQs.
+- Do NOT create simple definition questions.
+- Do NOT create unrelated theoretical questions.
+- Do NOT use concepts from outside the given chapter.
+- If the chapter is primarily theoretical and does not contain
+  suitable numerical/problem-solving concepts, generate
+  NCERT-based case/application questions instead.
+"""
         else:  # Mixed
             system_message = """You are an expert NCERT question paper creator. You create a structured mix of MCQs, short answer, and long answer questions.
 
