@@ -3,6 +3,7 @@ from supabase import create_client, Client
 from flask import Flask, render_template, request, make_response, session, redirect, url_for
 from rag import generate_questions
 import secrets
+from auth_utils import login_user, logout_user, current_email, is_logged_in, login_required, plan_from_user
 import json
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -227,6 +228,43 @@ def landing():
 def landing_page():
     return render_template('landing.html')
 
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    import json
+    email = current_email()
+    user = get_user(email)
+    if not user:
+        return redirect(url_for('landing'))
+    
+    plan = plan_from_user(user)
+    recent_papers = json.loads(user.get('recent_papers') or '[]')
+    
+    # Daily usage info
+    daily_used = user.get('daily_count', 0)
+    role = user.get('role', 'student')
+    is_premium = user.get('is_premium', False)
+    is_super = user.get('is_super_premium', False)
+    
+    # Daily limit based on role + plan
+    if role in ('coaching', 'school'):
+        daily_limit = 50 if is_super else (20 if is_premium else 2)
+    else:
+        daily_limit = 10 if is_super else (5 if is_premium else 1)
+    
+    daily_remaining = max(0, daily_limit - daily_used)
+    
+    return render_template('dashboard.html',
+        user=user,
+        plan=plan,
+        recent_papers=recent_papers,
+        daily_used=daily_used,
+        daily_limit=daily_limit,
+        daily_remaining=daily_remaining,
+        total_papers=user.get('total_papers', 0),
+        total_questions=user.get('total_questions', 0)
+    )
+
 # ==================== HOME ROUTE ====================
 # This route handles the homepage (root URL "/")
 # It retrieves user info from the session if they're logged in
@@ -287,15 +325,7 @@ def signup():
         existing_user = get_user(email)
         if existing_user:
             # User exists in Supabase, log them in directly
-            session['user_email'] = email
-            session['user_name'] = existing_user['name']
-            # CHANGE 4: Load Premium Status Into Session
-            # ============================================
-            session['user_premium'] = existing_user.get('is_premium', False)  # ← ADD THIS LINE
-            session['user_role'] = existing_user.get('role', 'student')
-            session['institute_name'] = existing_user.get('institute_name', '')  # ← add
-            session['city'] = existing_user.get('city', '')                      # ← add
-            session['mobile'] = existing_user.get('mobile', '')
+            login_user(existing_user)
             print(f"✅ Returning user logged in: {existing_user['name']} ({email})")
             return redirect(url_for('home'))
         
@@ -328,19 +358,7 @@ def signup():
         if not created:
             return render_template("signup.html", error="❌ Signup failed. Please try again.")
         
-        # ====================================================================
-        # LOG NEW USER IN (Set session cookies)
-        # Creates browser session to keep user logged in
-        # ====================================================================
-        session['user_email'] = email
-        session['user_name'] = name
-        # CHANGE 4: Load Premium Status Into Session
-        # ============================================
-        session['user_premium'] = False  # ← ADD THIS LINE (new users are FREE)
-        session['user_role'] = role
-        session['institute_name'] = institute_name  
-        session['city'] = city                      # ← add (already extracted from form above)
-        session['mobile'] = mobile  
+        login_user(created)
         
         print(f"✅ New user created and logged in: {name} ({email})")
         return redirect(url_for('home'))
@@ -351,7 +369,7 @@ def signup():
 @app.route("/logout")
 def logout():
     """Logout current user"""
-    session.clear()
+    logout_user()
     return redirect(url_for('home'))
 
 @app.route("/generate", methods=["POST"])
@@ -363,7 +381,7 @@ def generate():
             ip_address = ip_address.split(',')[0].strip()
         
         # Check if user is logged in
-        user_email = session.get('user_email')
+        user_email = current_email()
         
         # ========== Load/Refresh Premium Status ==========
         if user_email:
@@ -398,6 +416,9 @@ def generate():
         
         # Get form data
         subject = request.form.get("subject", "Mathematics")
+        effective_subject = request.form.get("effective_subject", "").strip()
+        if effective_subject:
+           subject = effective_subject  # Use commerce sub-subject if present
         class_num = request.form.get("class_num", "8")
         chapter = request.form.get("chapter", "")
         num_q = request.form.get("num_questions", "10")
@@ -406,7 +427,7 @@ def generate():
         
         # ========== PREMIUM FEATURE CHECK ==========
         # Check if user is trying to use premium features (>5 questions)
-        user_email = session.get('user_email')
+        user_email = current_email()
         is_premium = session.get('user_premium', False)
         
         # Convert num_q to integer
@@ -456,6 +477,36 @@ def generate():
         
         # Generate questions
         result = generate_questions(subject, class_num, chapter, num_q, difficulty, question_type)
+
+        # ── Track paper stats in Supabase ──
+        if user_email and result and not result.startswith('❌'):
+            try:
+                import json as _json
+                from datetime import datetime as _dt
+                _fresh = get_user(user_email)
+                # Count questions generated
+                _q_count = sum(1 for line in result.split('\n')
+                            if line.strip().startswith('Q') and line.strip()[1:2].isdigit())
+                _q_count = max(_q_count, int(num_q))  # fallback to requested count
+                # Build recent paper entry
+                _entry = {
+                    "subject": subject,
+                    "class_num": class_num,
+                    "chapter": chapter[:40],
+                    "questions": _q_count,
+                    "date": _dt.now().strftime("%d %b %Y")
+                }
+                _recent = _json.loads(_fresh.get('recent_papers') or '[]')
+                _recent.insert(0, _entry)
+                _recent = _recent[:5]  # keep last 5 only
+                update_user(user_email, {
+                    'total_papers':    (_fresh.get('total_papers')    or 0) + 1,
+                    'total_questions': (_fresh.get('total_questions') or 0) + _q_count,
+                    'recent_papers':   _json.dumps(_recent)
+                })
+                print(f"📊 Stats updated: papers={(_fresh.get('total_papers') or 0)+1}")
+            except Exception as _e:
+                print(f"⚠️ Stats tracking failed (non-critical): {_e}")
         
         return render_template("index.html", 
                              questions=result,
@@ -472,7 +523,7 @@ def generate():
 
 @app.route("/download", methods=["POST"])
 def download():
-    if not session.get('user_email'):
+    if not is_logged_in():
         return "Unauthorized", 403
 
     questions = request.form["questions"]

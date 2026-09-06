@@ -47,10 +47,14 @@ def load_pdfs_for_class(subject, class_num, chapter):
     Expected folder structure:
         data/Mathematics/8/   (for Maths Class 8)
         data/Science/8/       (for Science Class 8)
+        data/Physics/11/      (for Physics Class 11)
+        data/Chemistry/11/    (for Chemistry Class 11)
+        data/Biology/11/      (for Biology Class 11)
+        data/Commerce/11/     (for Commerce Class 11)
     
     Args:
-        subject: Subject name (Mathematics, Science, etc.)
-        class_num: Class number (6, 7, 8, 9)
+        subject: Subject name (Mathematics, Science, Physics, Chemistry, Biology, Commerce, etc.)
+        class_num: Class number (6, 7, 8, 9, 10, 11, 12)
         chapter: Chapter name to search for in PDF filenames
     
     Returns: text from the matching PDF (or first PDF if no match found)
@@ -71,6 +75,8 @@ def load_pdfs_for_class(subject, class_num, chapter):
         folder_name = "Biology"
     elif subject_lower in ["socialscience", "social-science", "social science"]:
         folder_name = "SocialScience"
+    elif subject_lower == "commerce":
+        folder_name = "Commerce"
     else:
         folder_name = subject  # fallback  # fallback to whatever user provided
     

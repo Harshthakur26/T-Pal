@@ -400,5 +400,104 @@ CHAPTER_MAP = {
         "political parties": "jess404.pdf",
         "outcomes of democracy": "jess405.pdf"
     }
+    },
+    "Commerce": {
+            "Accountancy": {
+        "11": {
+            "introduction to accounting": "keac101.pdf",
+            "theory base of accounting": "keac102.pdf",
+            "recording of transactions - I": "keac103.pdf",
+            "recording of transactions - II ": "keac104.pdf",
+            "bank Reconciliation Statement": "keac105.pdf",
+            "trial balance and rectification of errors": "keac106.pdf",
+            "depreciation, provisions and reserves": "keac107.pdf",
+            "financial statements - i": "keac201.pdf",
+            "financial statements - ii": "keac202.pdf"
+        },
+        "12": {
+            "accounting for partnership: basic concepts": "leac101.pdf",
+            "reconstitution of a partnership firm - admission of a partner": "leac102.pdf",
+            "reconstitution of a partnership firm - retirement/death of a partner": "leac103.pdf",
+            "dissolution of partnership firm": "leac104.pdf",
+            "accounting for share capital": "leac201.pdf",
+            "issue and redemption of debentures": "leac202.pdf",
+            "financial statements of a company": "leac203.pdf",
+            "analysis of financial statements": "leac204.pdf",
+            "accounting ratios": "leac205.pdf",
+            "cash flow statement": "leac206.pdf"
     }
+        },
+        "Business Studies": {
+  # Class 11 - EXISTING (UNTOUCHED)
+        "11": {
+            "business, trade and commerce": "kebs101.pdf",
+            "forms of business organisations": "kebs102.pdf",
+            "private, public and global enterprises": "kebs103.pdf",
+            "business services": "kebs104.pdf",
+            "emerging modes of business": "kebs105.pdf",
+            "social responsibilities of business and business ethics": "kebs106.pdf",
+            "formation of a company": "kebs107.pdf",
+            "sources of business finance": "kebs108.pdf",
+            "MSME and business entrepreneurship": "kebs109.pdf",
+            "internal trade": "kebs110.pdf",
+            "international business": "kebs111.pdf"
+        },
+        # Class 12 - EXISTING (UNTOUCHED)
+        "12": {
+            "nature and significance of management": "lebs101.pdf",
+            "principles of management": "lebs102.pdf",
+            "business environment": "lebs103.pdf",
+            "planning": "lebs104.pdf",
+            "organising": "lebs105.pdf",
+            "staffing": "lebs106.pdf",
+            "directing": "lebs107.pdf",
+            "controlling": "lebs108.pdf",
+            "financial management": "lebs201.pdf",
+            "marketing": "lebs202.pdf",
+            "consumer protection": "lebs203.pdf"
+    }
+},
+    "Economics": {
+        "11": {
+            "indian economic development": {
+            "indian economy on the eve of independence": "keec101.pdf",
+            "indian economy 1950-1990": "keec102.pdf",
+            "liberalisation, privatisation and globalisation: an appraisal": "keec103.pdf",
+            "human capital formation in india": "keec104.pdf",
+            "rural development": "keec105.pdf",
+            "employment: growth, informalisation and other issues": "keec106.pdf",
+            "environment and sustainable development": "keec107.pdf",
+            "comparative development experiences of india and its neighbours": "keec108.pdf"
+            },
+            "statistics for economics": {
+            "introduction": "kest101.pdf",
+            "collection of data": "kest102.pdf",
+            "organisation of data": "kest103.pdf",
+            "presentation of data": "kest104.pdf",
+            "measures of central tendency": "kest105.pdf",
+            "correlation": "kest106.pdf",
+            "index numbers": "kest107.pdf",
+            "uses of statistical methods": "kest108.pdf"
+            }
+        }
+},
+        "12": {
+            "introductory microeconomics": {
+            "introduction": "leec201.pdf",
+            "theory of consumer behaviour": "leec202.pdf",
+            "production and costs": "leec203.pdf",
+            "the theory of the firm under perfect competition": "leec204.pdf",
+            "market equilibrium": "leec205.pdf"
+            },
+            "introductory macroeconomics": {
+            "introduction": "leec101.pdf",
+            "national income accounting": "leec102.pdf",
+            "money and banking": "leec103.pdf",
+            "determination of income and employment": "leec104.pdf",
+            "government budget and the economy": "leec105.pdf",
+            "open economy macroeconomics": "leec106.pdf"
+    }
+  }
+  }
 }
+

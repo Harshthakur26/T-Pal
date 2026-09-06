@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard - QGurukul</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 24px 16px;
+        }
+
+        .wrapper {
+            max-width: 720px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* ── CARD BASE ── */
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        /* ── WELCOME CARD ── */
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 18px;
+            padding: 28px 24px;
+            box-shadow: 0 8px 32px rgba(102,126,234,0.35);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .welcome-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .welcome-card p {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .plan-badge {
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .plan-free        { background: rgba(255,255,255,0.2); color: white; border: 1.5px solid rgba(255,255,255,0.5); }
+        .plan-premium     { background: #f6e05e; color: #744210; }
+        .plan-super       { background: #fbd38d; color: #652b19; }
+
+        /* ── STATS GRID ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        @media(min-width: 500px) {
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .stat-box {
+            background: #f7f9ff;
+            border-radius: 14px;
+            padding: 18px 14px;
+            text-align: center;
+            border: 1.5px solid #e8ecff;
+        }
+
+        .stat-value {
+            font-size: 30px;
+            font-weight: 800;
+            color: #667eea;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        /* ── USAGE BAR ── */
+        .usage-section { margin-top: 4px; }
+
+        .usage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .usage-header h3 { font-size: 15px; color: #2d3748; font-weight: 700; }
+        .usage-header span { font-size: 13px; color: #718096; }
+
+        .usage-bar-track {
+            height: 10px;
+            background: #edf2f7;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .usage-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.6s ease;
+        }
+
+        .usage-bar-fill.warning { background: linear-gradient(90deg, #f6ad55, #ed8936); }
+        .usage-bar-fill.full    { background: linear-gradient(90deg, #fc8181, #e53e3e); }
+
+        /* ── SECTION TITLE ── */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── RECENT PAPERS ── */
+        .paper-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #f7f9ff;
+            border: 1px solid #e8ecff;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .paper-row:last-child { margin-bottom: 0; }
+
+        .paper-info { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+        .paper-tag {
+            font-size: 12px;
+            font-weight: 600;
+            background: #e8ecff;
+            color: #667eea;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .paper-chapter {
+            font-size: 13px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .paper-date {
+            font-size: 12px;
+            color: #a0aec0;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 24px;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        /* ── CTA ── */
+        .cta-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .cta-card div h3 { font-size: 16px; color: #2d3748; font-weight: 700; }
+        .cta-card div p  { font-size: 13px; color: #718096; margin-top: 3px; }
+
+        .btn-generate {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 13px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(102,126,234,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.5);
+        }
+
+        /* ── NAV ── */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 4px 0;
+        }
+
+        .top-nav .brand {
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .top-nav .nav-links { display: flex; gap: 16px; align-items: center; }
+        .top-nav .nav-links a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .top-nav .nav-links a:hover { color: white; }
+
+        /* ── UPGRADE PROMPT ── */
+        .upgrade-banner {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1.5px solid #f6ad55;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .upgrade-banner p { font-size: 13px; color: #744210; }
+
+        .btn-upgrade {
+            background: #dd6b20;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        /* Institute badge for coaching/school */
+        .institute-info {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <!-- NAV -->
+    <div class="top-nav">
+        <a href="/home" class="brand">📚 QGurukul</a>
+        <div class="nav-links">
+            <a href="/home">Generator</a>
+            <a href="/upgrade">Plans</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- WELCOME CARD -->
+    <div class="welcome-card">
+        <div>
+            <h2>👋 Welcome, {{ user.name or 'User' }}</h2>
+            <p>{{ user.email }}</p>
+            {% if user.institute_name %}
+            <p class="institute-info">🏫 {{ user.institute_name }}{% if user.city %}, {{ user.city }}{% endif %}</p>
+            {% endif %}
+        </div>
+        <span class="plan-badge
+            {% if plan == 'Super Premium' %}plan-super
+            {% elif plan == 'Premium' %}plan-premium
+            {% else %}plan-free{% endif %}">
+            {% if plan == 'Super Premium' %}⭐ Super Premium
+            {% elif plan == 'Premium' %}💎 Premium
+            {% else %}🆓 Free Plan{% endif %}
+        </span>
+    </div>
+
+    <!-- UPGRADE BANNER (free users only) -->
+    {% if plan == 'Free Plan' or plan == 'Free' %}
+    <div class="upgrade-banner">
+        <p>🚀 <strong>Unlock more papers & features.</strong> Upgrade to get 5–50 papers/day + institute branding.</p>
+        <a href="/upgrade" class="btn-upgrade">Upgrade Now →</a>
+    </div>
+    {% endif %}
+
+    <!-- STATS -->
+    <div class="card">
+        <div class="section-title">📊 Your Stats</div>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-value">{{ total_papers }}</div>
+                <div class="stat-label">Papers Generated</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">{{ total_questions }}</div>
+                <div class="stat-label">Questions Created</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">{{ daily_used }}</div>
+                <div class="stat-label">Used Today</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">{{ daily_remaining }}</div>
+                <div class="stat-label">Remaining Today</div>
+            </div>
+        </div>
+
+        <!-- Usage Bar -->
+        <div class="usage-section" style="margin-top:20px;">
+            <div class="usage-header">
+                <h3>Daily Usage</h3>
+                <span>{{ daily_used }} / {{ daily_limit }} papers</span>
+            </div>
+            <div class="usage-bar-track">
+                {% set pct = (daily_used / daily_limit * 100) if daily_limit > 0 else 0 %}
+                <div class="usage-bar-fill
+                    {% if pct >= 100 %}full
+                    {% elif pct >= 70 %}warning
+                    {% endif %}"
+                    style="width: {{ [pct, 100]|min }}%;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT PAPERS -->
+    <div class="card">
+        <div class="section-title">🕒 Recent Papers</div>
+
+        {% if recent_papers %}
+            {% for paper in recent_papers %}
+            <div class="paper-row">
+                <div class="paper-info">
+                    <span class="paper-tag">{{ paper.subject }}</span>
+                    <span class="paper-tag">Class {{ paper.class_num }}</span>
+                    <span class="paper-chapter">{{ paper.chapter }}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:12px; color:#667eea; font-weight:600;">{{ paper.questions }}Q</span>
+                    <span class="paper-date">{{ paper.date }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                📄 No papers generated yet.<br>
+                Generate your first paper below!
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- ACCOUNT INFO -->
+    <div class="card">
+        <div class="section-title">👤 Account</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:14px;">
+            <div>
+                <div style="color:#a0aec0; font-size:12px; margin-bottom:3px;">Name</div>
+                <div style="color:#2d3748; font-weight:600;">{{ user.name or '—' }}</div>
+            </div>
+            <div>
+                <div style="color:#a0aec0; font-size:12px; margin-bottom:3px;">Email</div>
+                <div style="color:#2d3748; font-weight:600;">{{ user.email }}</div>
+            </div>
+            <div>
+                <div style="color:#a0aec0; font-size:12px; margin-bottom:3px;">Mobile</div>
+                <div style="color:#2d3748; font-weight:600;">{{ user.mobile or '—' }}</div>
+            </div>
+            <div>
+                <div style="color:#a0aec0; font-size:12px; margin-bottom:3px;">Role</div>
+                <div style="color:#2d3748; font-weight:600; text-transform:capitalize;">{{ user.role or 'Student' }}</div>
+            </div>
+            {% if user.institute_name %}
+            <div>
+                <div style="color:#a0aec0; font-size:12px; margin-bottom:3px;">Institute</div>
+                <div style="color:#2d3748; font-weight:600;">{{ user.institute_name }}</div>
+            </div>
+            {% endif %}
+            {% if user.city %}
+            <div>
+                <div style="color:#a0aec0; font-size:12px; margin-bottom:3px;">City</div>
+                <div style="color:#2d3748; font-weight:600;">{{ user.city }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- GENERATE CTA -->
+    <div class="card cta-card">
+        <div>
+            <h3>Ready to generate?</h3>
+            <p>Create a new NCERT question paper in seconds.</p>
+        </div>
+        <a href="/home" class="btn-generate">
+            ⚡ Generate Paper →
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

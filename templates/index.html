@@ -363,6 +363,7 @@
 {% if session.user_name %}
 <div style="text-align: right; padding: 10px; max-width: 900px; margin: 0 auto 10px; color: #ffffff;">
     👋 Welcome, {{ session.user_name }} | 
+    <a href="/dashboard" style="color: #f6e05e;">Dashboard</a> |
     <a href="/logout" style="color: #f6e05e; text-decoration: none; font-weight: 600;">Logout</a>
 </div>
 {% endif %}
@@ -402,24 +403,38 @@
                     <span class="help-text">💡 Optional - helps us understand who finds this useful</span>
                 </div>
                 
-                <div class="form-group">
-                    <label><span class="icon">📖</span> Subject</label>
-                    <select name="subject" id="subjectSelect">
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="Science">Science</option>
-                        <option value="SocialScience">SocialScience</option>
-                        <option value="Physics">Physics</option>    
-                        <option value="Chemistry">Chemistry</option>
-                        <option value="Biology">Biology</option>
-                    </select>
-                </div>
+                <!-- SUBJECT SELECT -->
+        <div class="form-group">
+            <label>📖 Subject</label>
+            <select name="subject" id="subjectSelect" onchange="handleSubjectChange()" required>
+                <option value="">-- Select Subject --</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science"     class="upto10">Science</option>
+                <option value="SocialScience">Social Science</option>
+                <option value="Physics"     class="from11">Physics</option>
+                <option value="Chemistry"   class="from11">Chemistry</option>
+                <option value="Biology"     class="from11">Biology</option>
+                <option value="Commerce"    class="from11">Commerce</option>
+            </select>
+        </div>
+
+<!-- COMMERCE SUB-SUBJECT (hidden until Commerce is selected) -->
+        <div id="commerceDiv" style="display:none; margin-top:16px;">
+            <label>📚 Commerce Subject</label>
+            <select name="commerce_subject" id="commerceSubjectSelect" onchange="handleCommerceSubject()" required>
+                <option value="">-- Select Commerce Subject --</option>
+            </select>
+            <!-- Hidden input sends actual subject path to backend -->
+            <input type="hidden" name="effective_subject" id="effectiveSubject">
+        </div>
                 
                 <div class="form-group">
                     <label><span class="icon">🎓</span> Class</label>
-                    <select name="class_num" id="classSelect">
+                    <select name="class_num" id="classSelect" onchange="handleClassChange()" required>
+                        <option value="">-- Select Class --</option>
                         <option value="6">Class 6</option>
                         <option value="7">Class 7</option>
-                        <option value="8" selected>Class 8</option>
+                        <option value="8">Class 8</option>
                         <option value="9">Class 9</option>
                         <option value="10">Class 10</option>
                         <option value="11">Class 11</option>
@@ -924,8 +939,97 @@ const chaptersByClass = {
             "Political Parties",
             "Outcomes of Democracy"
         ]
+    },
+    Commerce: {
+        "Accountancy-11": [
+                "Introduction to Accounting",
+                "Theory Base of Accounting",
+                "Recording of Transactions - I",
+                "Recording of Transactions - II",
+                "Bank Reconciliation Statement",
+                "Trial Balance and Rectification of Errors",
+                "Depreciation, Provisions and Reserves",
+                "Financial Statements - I",
+                "Financial Statements - II"
+            ],
+            "Accountancy-12": [
+                "Accounting for Partnership: Basic concepts",
+                "Reconstitution of a Partnership - Admission of a Partner",
+                "Reconstitution of a Partnership - Retirement/Death of a Partner",
+                "Dissolution of a Partnership Firm",
+                "Accounting for Share Capital",
+                "Issue and Redemption of Debentures",
+                "Financial Statements of a Company",
+                "Analysis of Financial Statements",
+                "Accounting Ratios",
+                "Cash Flow Statement"
+            ],
+
+        "BusinessStudies-11": [
+                "Business, Trade and commerce",
+                "Forms of Business Organisations",
+                "Private, Public and Global Enterprises",
+                "Business Services",
+                "Emerging Modes of Business",
+                "Social Responsibility of Business and Business Ethics",
+                "Formation of a Company",
+                "Sources of Business Finance",
+                "MSME and Business Development",
+                "Internal Trade",
+                "International business"
+            ],
+            "BusinessStudies-12": [
+                "Nature and significance of management",
+                "Principles of Management",
+                "Business Environment",
+                "Planning",
+                "Organising",
+                "Staffing",
+                "Directing",
+                "Controlling",
+                "Financial Management",
+                "Marketing",
+                "Consumer Protection"
+            ],
+
+        "Economics-11": [
+                "Indian Economy on the Eve of Independence",
+                "Indian Economy (1950-1990)",
+                "Liberalisation, Privatisation and Globalisation: An Appraisal",
+                "Human Capital Formation in India",
+                "Rural Development",
+                "Employment: Growth, Informalisation and Other Issues",
+                "Environment and Sustainable Development",
+                "Comparative Development Experiences of India and its Neighbours"
+            ],
+            "Statistics-11": [
+                "Introduction",
+                "Collection of Data",
+                "Organisation of Data",
+                "Presentation of Data",
+                "Measure of Central Tendency",
+                "Correlation",
+                "Index numbers",
+                "Uses of Statistical methods"
+            ],
+            "Microeconomics-12": [
+                "Introduction",
+                "Theory of Consumer Behaviour",
+                "Production and Costs",
+                "The Theory of the Firm Under Perfect Competition",
+                "Market Equilibrium"
+            ],
+            "Macroeconomics-12": [
+                "Introduction",
+                "National Income Accounting",
+                "Money and Banking",
+                "Determination of Income and Employment",
+                "Government Budget and the Economy",
+                "Open Economy Macroeconomics"
+            ]
+
     }
-};
+}
 
 // Get DOM elements
 const classSelect = document.getElementById('classSelect');
@@ -938,25 +1042,26 @@ const form = document.getElementById('generateForm');
 function updateChapters() {
     const selectedClass = classSelect.value;
     const selectedSubject = subjectSelect.value;
-    
-    // Get chapters for selected class and subject
-    const chapters = chaptersByClass[selectedSubject][selectedClass] || [];
-    
-    // Clear existing options
     chapterSelect.innerHTML = '<option value="">-- Select a Chapter --</option>';
-    
-    // Add new chapter options
-    chapters.forEach(chapter => {
-        const option = document.createElement('option');
-        option.value = chapter;
-        option.textContent = chapter;
-        chapterSelect.appendChild(option);
+
+    if (!selectedSubject || !selectedClass) return;
+
+    // Commerce needs special handling
+    if (selectedSubject === 'Commerce') return; // chapters load after sub-subject selected
+
+    // Regular subjects
+    const subjectData = chaptersByClass[selectedSubject];
+    if (!subjectData) return;
+    const chapters = subjectData[selectedClass] || [];
+    chapters.forEach(ch => {
+        const opt = document.createElement('option');
+        opt.value = ch; opt.textContent = ch;
+        chapterSelect.appendChild(opt);
     });
 }
 
 // Listen for class or subject change
 classSelect.addEventListener('change', updateChapters);
-subjectSelect.addEventListener('change', updateChapters);
 
 // Handle form submission
 form.addEventListener('submit', function(e) {
@@ -1042,7 +1147,7 @@ document.getElementById("classSelect").addEventListener("change", function() {
         
         if (selectedClass <= 10) {
             // Class 6-10: Show Science + Maths, Hide Physics/Chemistry
-            if (subject === "Physics" || subject === "Chemistry" || subject === "Biology") {
+            if (subject === "Physics" || subject === "Chemistry" || subject === "Biology" || subject === "Commerce") {
                 options[i].style.display = "none";   // Hide it from dropdown
                 options[i].disabled = true;           // Disable it so it can't be selected
             } else {
@@ -1202,6 +1307,100 @@ function closeModal() {
 // ADD THIS — auto-opens modal if redirected after 2nd generation attempt
 if (new URLSearchParams(window.location.search).get('signup') === '1') {
     document.getElementById('signupModal').style.display = 'flex';
+}
+</script>
+
+<!-- ================================================================
+     CLASS AND SUBJECT SELECTION HANDLERS
+     These functions filter subjects, manage Commerce sub-subjects,
+     and reset the chapter dropdown when an earlier selection changes.
+     ================================================================ -->
+<script>
+// **CLASS CHANGE: FILTER SUBJECTS AND RESET DOWNSTREAM FIELDS**
+function handleClassChange() {
+    const selectedClass = parseInt(document.getElementById('classSelect').value);
+    const subjectSelect = document.getElementById('subjectSelect');
+
+    // Show senior-secondary subjects only for Classes 11 and 12.
+    subjectSelect.querySelectorAll('option').forEach(option => {
+        if (option.classList.contains('from11')) {
+            option.hidden = selectedClass < 11;
+        }
+        if (option.classList.contains('upto10')) {
+            option.hidden = selectedClass > 10;
+        }
+    });
+
+    // **RESET: CLEAR VALUES THAT DEPEND ON THE SELECTED CLASS**
+    subjectSelect.value = '';
+    document.getElementById('commerceDiv').style.display = 'none';
+    document.getElementById('commerceSubjectSelect').value = '';
+    document.getElementById('effectiveSubject').value = '';
+    resetChapters();
+}
+
+// **SUBJECT CHANGE: SHOW OR HIDE THE COMMERCE SUBJECT SELECTOR**
+function handleSubjectChange() {
+    const subject = document.getElementById('subjectSelect').value;
+    const selectedClass = document.getElementById('classSelect').value;
+    const commerceDiv = document.getElementById('commerceDiv');
+    const commerceSelect = document.getElementById('commerceSubjectSelect');
+
+    if (subject === 'Commerce') {
+        commerceDiv.style.display = 'block';
+
+        // **POPULATE: USE THE COMMERCE SUBJECTS FOR THE SELECTED CLASS**
+        commerceSelect.innerHTML = '<option value="">-- Select Commerce Subject --</option>';
+        if (selectedClass == 11) {
+            commerceSelect.innerHTML += `
+                <option value="Accountancy-11">Accountancy</option>
+                <option value="BusinessStudies-11">Business Studies</option>
+                <option value="Economics-11">Economics</option>
+                <option value="Statistics-11">Statistics for Economics</option>`;
+        } else if (selectedClass == 12) {
+            commerceSelect.innerHTML += `
+                <option value="Accountancy-12">Accountancy</option>
+                <option value="BusinessStudies-12">Business Studies</option>
+                <option value="Macroeconomics-12">Macro Economics</option>
+                <option value="Microeconomics-12">Micro Economics</option>`;
+        }
+
+        document.getElementById('effectiveSubject').value = '';
+        resetChapters();
+    } else {
+        commerceDiv.style.display = 'none';
+        // **SET EFFECTIVE SUBJECT: SAVE THE NORMAL SUBJECT VALUE**
+        document.getElementById('effectiveSubject').value = subject;
+    }
+}
+
+// **COMMERCE SUBJECT CHANGE: STORE THE FINAL SUBJECT VALUE**
+function handleCommerceSubject() {
+    const selectedValue = document.getElementById('commerceSubjectSelect').value;
+    if (!selectedValue) return;
+
+    // Set effective subject for backend
+    document.getElementById('effectiveSubject').value = selectedValue;
+
+    // Load chapters from chaptersByClass.Commerce using key directly
+    const chapters = chaptersByClass['Commerce'][selectedValue] || [];
+    const chapterSelect = document.getElementById('chapterSelect');
+    chapterSelect.innerHTML = '<option value="">-- Select a Chapter --</option>';
+    chapters.forEach(ch => {
+        const opt = document.createElement('option');
+        opt.value = ch;
+        opt.textContent = ch;
+        chapterSelect.appendChild(opt);
+    });
+}
+
+
+// **RESET CHAPTERS: RETURN THE CHAPTER DROPDOWN TO ITS DEFAULT STATE**
+function resetChapters() {
+    const chapterSelect = document.getElementById('chapterSelect');
+    if (chapterSelect) {
+        chapterSelect.innerHTML = '<option value="">-- Select a Chapter --</option>';
+    }
 }
 </script>
 
